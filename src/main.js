@@ -60,7 +60,7 @@ const createFilmsListExtra = (filmsListTitle) =>
       <div class="films-list__container"></div>
   </section>`;
 
-const CreateFilmCard = () => {
+const createFilmCard = () => {
   return (
     `<article class="film-card">
           <h3 class="film-card__title">The Dance of Life</h3>
@@ -82,13 +82,13 @@ const CreateFilmCard = () => {
   );
 };
 
-const CreateButtonShowMore = () => {
+const createButtonShowMore = () => {
   return (
     `<button class="films-list__show-more">Show more</button>`
   );
 };
 
-const CreateMoviesAmount = () => {
+const createMoviesAmount = () => {
   return (
     `<p>130 291 movies inside</p>`
   );
@@ -111,17 +111,18 @@ render(siteMainElement, createFilmsContent());
 const filmsElement = siteMainElement.querySelector(`.films`);
 const filmListContainer = filmsElement.querySelector(`.films-list__container`);
 
+multipleRender(filmListContainer, createFilmCard(), `beforeend`, filmCardCount);
 
-render(filmsElement, CreateButtonShowMore());
+render(filmsElement, createButtonShowMore());
 
 filmsListExtraTitles.forEach((title) => render(filmsElement, createFilmsListExtra(title)));
 
 const filmsListExtraContainerElements = document.querySelectorAll(`.films-list--extra .films-list__container`);
 
 filmsListExtraContainerElements.forEach((filmsListExtraContainerElement) => {
-  multipleRender(filmsListExtraContainerElement, CreateFilmCard(), `beforeend`, filmsInExtraCount);
+  multipleRender(filmsListExtraContainerElement, createFilmCard(), `beforeend`, filmsInExtraCount);
 });
 
-render(siteFooterElement, CreateMoviesAmount());
+render(siteFooterElement, createMoviesAmount());
 
-multipleRender(filmListContainer, CreateFilmCard(), `beforeend`, filmCardCount);
+
