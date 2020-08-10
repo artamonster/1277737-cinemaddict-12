@@ -1,11 +1,11 @@
 import {createUserRank} from "./view/user-rank.js";
 import {createSiteMenu} from "./view/site-menu.js";
 import {createSiteSorting} from "./view/site-sorting.js";
-import {createFilmsContent} from "./view/film-list.js";
+import {createFilmsList} from "./view/film-list.js";
 import {createFilmCard} from "./view/film-card.js";
 import {createFilmsListExtra} from "./view/film-list-extra.js";
-import {createButtonShowMore} from "./view/button-showmore.js";
-import {createMoviesAmount} from "./view/stats.js";
+import {createButtonShowMore} from "./view/button-show-more.js";
+import {createMoviesAmount} from "./view/movies-amount.js";
 
 const filmCardCount = 5;
 const filmsListExtraTitles = [`Top rated`, `Most commented`];
@@ -27,7 +27,7 @@ const multipleRender = (container, template, place = `beforeend`, quantity = 1) 
 render(siteHeaderElement, createUserRank());
 render(siteMainElement, createSiteMenu());
 render(siteMainElement, createSiteSorting());
-render(siteMainElement, createFilmsContent());
+render(siteMainElement, createFilmsList());
 
 const filmsElement = siteMainElement.querySelector(`.films`);
 const filmListContainer = filmsElement.querySelector(`.films-list__container`);
