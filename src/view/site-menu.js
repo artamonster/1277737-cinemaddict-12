@@ -1,3 +1,5 @@
+import {createElement} from '../helpers/utils.js';
+
 const createSiteMenu = (watchListCount, watchedCount, favoriteCount) => {
   return `<nav class="main-navigation">
     <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
@@ -8,4 +10,27 @@ const createSiteMenu = (watchListCount, watchedCount, favoriteCount) => {
   </nav>`;
 };
 
-export {createSiteMenu};
+export default class SiteMenuView {
+  constructor(watchListCount, watchedCount, favoriteCount) {
+    this._watchListCount = watchListCount;
+    this._watchedCount = watchedCount;
+    this._favoriteCount = favoriteCount;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSiteMenu(this._watchListCount, this._watchedCount, this._favoriteCount);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

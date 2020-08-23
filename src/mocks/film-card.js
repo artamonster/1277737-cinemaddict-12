@@ -1,5 +1,5 @@
 import {text} from '../helpers/const';
-import {getRandomArbitrary,
+import {getRandomErratic,
   getRandomIntInclusive,
   getRandomArrayItem,
   getRandomBooleanValue} from '../helpers/utils';
@@ -61,7 +61,7 @@ const generateDescription = () => {
 
 const generateFilmCard = () => ({
   title: getRandomArrayItem(filmTitles),
-  rate: +getRandomArbitrary(0, 10).toFixed(1),
+  rate: +getRandomErratic(0, 10).toFixed(1),
   year: getRandomIntInclusive(1940, 2020),
   genre: getRandomArrayItem(genres),
   duration: getRandomIntInclusive(10, 180),

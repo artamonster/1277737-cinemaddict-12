@@ -1,4 +1,4 @@
-import {formatDuration, getFileName} from '../helpers/utils';
+import {formatDuration, getFileName, createElement} from '../helpers/utils';
 
 
 const setControlClass = (control) => control ? `film-card__controls-item--active` : ``;
@@ -46,4 +46,25 @@ const createFilmCard = (filmCard) => {
   </article>`;
 };
 
-export {createFilmCard};
+export default class FilmCardView {
+  constructor(filmCard) {
+    this._filmCard = filmCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCard(this._filmCard);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

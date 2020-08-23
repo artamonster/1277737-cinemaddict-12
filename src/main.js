@@ -1,13 +1,14 @@
-import {createUserRank} from "./view/user-rank.js";
-import {createSiteMenu} from "./view/site-menu.js";
-import {createSiteSorting} from "./view/site-sorting.js";
-import {createFilmsList} from "./view/film-list.js";
-import {createFilmCard} from "./view/film-card.js";
-import {createFilmsListExtra} from "./view/film-list-extra.js";
-// import {createFilmDetails} from "./view/film-details.js";
-import {createButtonShowMore} from "./view/button-show-more.js";
-import {createMoviesAmount} from "./view/movies-amount.js";
+import UserRankView from "./view/user-rank.js";
+import SiteMenuView from "./view/site-menu.js";
+import SortListView from "./view/site-sorting.js";
+import FilmsListView from "./view/film-list.js";
+import FilmCardView from "./view/film-card.js";
+import FilmsListExtraView from "./view/film-list-extra.js";
+// import FilmDetailsView from "./view/film-details.js";
+import LoadMoreButtonView from "./view/button-show-more.js";
+import MoviesAmountView from "./view/movies-amount.js";
 import {generateFilmCards} from "./mocks/film-card.js";
+import {RenderPosition, render} from './helpers/utils.js';
 
 const FILM_CARD_COUNT = 15;
 const SHOWING_FILM_CARD_COUNT_ON_START = 5;
@@ -20,24 +21,21 @@ const filmsListExtraTitles = [`Top rated`, `Most commented`];
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
-};
 const renderCardsAmount = (cards, sliceFrom, sliceTo, container) => {
   cards
     .slice(sliceFrom, sliceTo)
-    .forEach((card) => render(container, createFilmCard(card)));
+    .forEach((card) => render(container, new FilmCardView(card).getElement(), RenderPosition.BEFOREEND));
 };
 
 const filmsWatchList = filmCards.filter(({isInWatchlist}) => isInWatchlist);
 const filmsWatched = filmCards.filter(({isWatched}) => isWatched);
 const filmFavorite = filmCards.filter(({isFavorite}) => isFavorite);
 
-render(siteHeaderElement, createUserRank(filmsWatchList.length));
-render(siteMainElement, createSiteMenu(filmsWatchList.length, filmsWatched.length, filmFavorite.length));
-render(siteMainElement, createSiteSorting());
-render(siteMainElement, createFilmsList());
-// render(siteMainElement, createFilmDetails(filmCards[0]), `afterend`);
+render(siteHeaderElement, new UserRankView(filmsWatchList.length).getElement(), RenderPosition.BEFOREEND);
+render(siteMainElement, new SiteMenuView(filmsWatchList.length, filmsWatched.length, filmFavorite.length).getElement(), RenderPosition.BEFOREEND);
+render(siteMainElement, new SortListView().getElement(), RenderPosition.BEFOREEND);
+render(siteMainElement, new FilmsListView().getElement(), RenderPosition.BEFOREEND);
+// render(siteMainElement, new FilmDetailsView(filmCards[0]).getElement(), RenderPosition.BEFOREEND);
 
 const filmsElement = siteMainElement.querySelector(`.films`);
 const filmListContainer = filmsElement.querySelector(`.films-list__container`);
@@ -47,7 +45,7 @@ let showingFilmCardsCount = SHOWING_FILM_CARD_COUNT_ON_START;
 
 renderCardsAmount(filmCards, 0, showingFilmCardsCount, filmListContainer);
 
-render(filmsListElement, createButtonShowMore());
+render(filmsListElement, new LoadMoreButtonView().getElement(), RenderPosition.BEFOREEND);
 
 const loadMoreButton = filmsListElement.querySelector(`.films-list__show-more`);
 
@@ -68,7 +66,7 @@ const rateSum = filmCards.reduce((acc, {rate}) => rate + acc, 0);
 const commentsSum = filmCards.reduce((acc, {commentsCount}) => commentsCount + acc, 0);
 
 if (rateSum > 0) {
-  render(filmsElement, createFilmsListExtra(filmsListExtraTitles[0]));
+  render(filmsElement, new FilmsListExtraView(filmsListExtraTitles[0]).getElement(), RenderPosition.BEFOREEND);
 
   const sortedFilmCardsByRate = filmCards.slice().sort((a, b) => {
     return b.rate - a.rate;
@@ -79,7 +77,7 @@ if (rateSum > 0) {
   renderCardsAmount(sortedFilmCardsByRate, 0, SHOWING_FILM_CARD_COUNT_BY_EXTRA, topRatedContainerElements);
 }
 if (commentsSum > 0) {
-  render(filmsElement, createFilmsListExtra(filmsListExtraTitles[1]));
+  render(filmsElement, new FilmsListExtraView(filmsListExtraTitles[1]).getElement(), RenderPosition.BEFOREEND);
 
   const sortedFilmCardsByCommentCount = filmCards.slice().sort((a, b) => {
     return b.commentsCount - a.commentsCount;
@@ -89,6 +87,6 @@ if (commentsSum > 0) {
 
   renderCardsAmount(sortedFilmCardsByCommentCount, 0, SHOWING_FILM_CARD_COUNT_BY_EXTRA, mostCommentedContainerElements);
 }
-render(siteMainElement, createMoviesAmount());
+render(siteMainElement, new MoviesAmountView().getElement(), RenderPosition.BEFOREEND);
 
 

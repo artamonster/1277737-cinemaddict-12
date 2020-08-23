@@ -1,3 +1,4 @@
+import {createElement} from '../helpers/utils.js';
 
 const userRanks = [
   {
@@ -29,4 +30,25 @@ const createUserRank = (watchedMoviesCount) => {
   </section>`;
 };
 
-export {createUserRank};
+export default class UserRankView {
+  constructor(watchedMoviesCount) {
+    this._watchedMoviesCount = watchedMoviesCount;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createUserRank(this._watchedMoviesCount);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
