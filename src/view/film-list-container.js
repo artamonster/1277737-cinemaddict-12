@@ -1,18 +1,15 @@
 import {createElement} from '../helpers/utils.js';
 
-const createFilmsList = () => {
-  return (
-    `<section class="films-list"></section>`
-  );
-};
+const createFilmsListContainer = () => `<div class="films-list__container"></div>`;
 
-export default class FilmsListView {
+
+export default class FilmsListContainerView {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createFilmsList();
+    return createFilmsListContainer();
   }
 
   getElement() {
