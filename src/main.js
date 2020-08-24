@@ -13,7 +13,7 @@ import MoviesAmountView from "./view/movies-amount.js";
 import {generateFilmCards} from "./mocks/film-card.js";
 import {RenderPosition, render} from './helpers/utils.js';
 
-const FILM_COUNT = 0;
+const FILM_COUNT = 15;
 const SHOWING_FILM_CARD_COUNT_ON_START = 5;
 const SHOWING_FILM_CARD_COUNT_BY_BUTTON = 5;
 const SHOWING_FILM_CARD_COUNT_BY_EXTRA = 2;
@@ -26,14 +26,23 @@ const renderFilm = (container, film) => {
   const filmTitleCommentsElement = FilmCard.getElement().querySelector(`.film-card__comments`);
   const closeDetailsButton = FilmDetails.getElement().querySelector(`.film-details__close-btn`);
 
+  const onEscKeyDown = (evt) => {
+    const escKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (escKey) {
+      closeFilmDetails(evt);
+    }
+  };
+
   const openFilmDetails = (evt) => {
     evt.preventDefault();
     render(siteMainElement, FilmDetails.getElement(), RenderPosition.BEFOREEND);
+    document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const closeFilmDetails = (evt) => {
     evt.preventDefault();
     FilmDetails.getElement().remove();
+    document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
   filmPosterElement.addEventListener(`click`, openFilmDetails);
