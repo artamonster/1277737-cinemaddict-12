@@ -1,4 +1,4 @@
-import {createElement} from '../helpers/utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createSiteMenu = (watchListCount, watchedCount, favoriteCount) => {
   return `<nav class="main-navigation">
@@ -10,27 +10,15 @@ const createSiteMenu = (watchListCount, watchedCount, favoriteCount) => {
   </nav>`;
 };
 
-export default class SiteMenuView {
+export default class SiteMenuView extends AbstractComponent {
   constructor(watchListCount, watchedCount, favoriteCount) {
+    super();
     this._watchListCount = watchListCount;
     this._watchedCount = watchedCount;
     this._favoriteCount = favoriteCount;
-    this._element = null;
   }
 
   getTemplate() {
     return createSiteMenu(this._watchListCount, this._watchedCount, this._favoriteCount);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

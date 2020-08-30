@@ -1,4 +1,5 @@
-import {formatDuration, getFileName, createElement} from '../helpers/utils';
+import AbstractComponent from './abstract-component.js';
+import {formatDuration, getFileName} from '../helpers/utils';
 
 
 const setControlClass = (control) => control ? `film-card__controls-item--active` : ``;
@@ -46,25 +47,28 @@ const createFilmCard = (filmCard) => {
   </article>`;
 };
 
-export default class FilmCardView {
-  constructor(filmCard) {
-    this._filmCard = filmCard;
-    this._element = null;
+export default class FilmCardView extends AbstractComponent {
+  constructor(film) {
+    super();
+    this._film = film;
   }
 
   getTemplate() {
-    return createFilmCard(this._filmCard);
+    return createFilmCard(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setFilmPosterClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__poster`)
+      .addEventListener(`click`, handler);
   }
 
-  removeElement() {
-    this._element = null;
+  setFilmTitleClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__title`)
+      .addEventListener(`click`, handler);
+  }
+
+  setFilmCommentsClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__comments`)
+      .addEventListener(`click`, handler);
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from '../helpers/utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createFilmsListTitle = (films) => {
   return `<h2 class="films-list__title ${films.length ? `visually-hidden` : ``}">
@@ -7,25 +7,13 @@ const createFilmsListTitle = (films) => {
 };
 
 
-export default class FilmsListTitleView {
+export default class FilmsListTitleView extends AbstractComponent {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmsListTitle(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
