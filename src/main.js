@@ -11,7 +11,7 @@ import FilmCardView from "./view/film-card.js";
 import FilmDetailsView from "./view/film-details.js";
 import MoviesAmountView from "./view/movies-amount.js";
 import {generateFilmCards} from "./mocks/film-card.js";
-import {RenderPosition, render} from './helpers/utils.js';
+import {RenderPosition, render} from './helpers/render';
 
 const FILM_COUNT = 15;
 const SHOWING_FILM_CARD_COUNT_ON_START = 5;

@@ -1,25 +1,4 @@
-const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`,
-};
 
-const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};
-
-const render = (container, element, place) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
-};
 
 const getRandomErratic = (min, max) => Math.random() * (max - min) + min;
 
@@ -54,9 +33,6 @@ const getFileName = (title) => title
   .join(`-`);
 
 export {
-  RenderPosition,
-  createElement,
-  render,
   getRandomErratic,
   getRandomIntInclusive,
   getRandomArrayItem,

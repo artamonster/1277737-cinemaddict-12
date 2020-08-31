@@ -2,7 +2,7 @@ import {text} from '../helpers/const';
 import {getRandomErratic,
   getRandomIntInclusive,
   getRandomArrayItem,
-  getRandomBooleanValue} from '../helpers/utils';
+  getRandomBooleanValue} from '../helpers/common';
 
 const filmTitles = [
   `Apocalypse Now`,
