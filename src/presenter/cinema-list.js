@@ -36,14 +36,13 @@ class CinemaListPresenter {
   }
 
   _renderMovieList() {
-
+    this._renderSort();
     if (this._films.length) {
       const filmsElement = this._filmsContainer.getElement();
       const filmsListElement = filmsElement.querySelector(`.films-list`);
       render(filmsListElement, this._filmListContainerComponent, RenderPosition.BEFOREEND);
       return;
     }
-    this._renderSort();
     this._renderFilmCardsList();
   }
 
@@ -151,3 +150,5 @@ class CinemaListPresenter {
     }
   }
 }
+
+export default CinemaListPresenter;
