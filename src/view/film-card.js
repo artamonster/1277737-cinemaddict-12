@@ -1,9 +1,7 @@
 import AbstractComponent from './abstract-component.js';
 import {formatDuration, getFileName} from '../helpers/common';
 
-
 const setControlClass = (control) => control ? `film-card__controls-item--active` : ``;
-
 
 const createFilmCard = (filmCard) => {
   const {

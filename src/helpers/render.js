@@ -1,6 +1,9 @@
+import AbstractComponent from '../view/abstract-component.js';
+
 const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
+  AFTEREND: `aftereend`
 };
 
 const createElement = (template) => {
@@ -10,13 +13,23 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-const render = (container, element, place) => {
+const render = (container, child, place) => {
+  if (container instanceof AbstractComponent) {
+    container = container.getElement();
+  }
+
+  if (child instanceof AbstractComponent) {
+    child = child.getElement();
+  }
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(child);
+      break;
+    case RenderPosition.AFTEREND:
+      container.parentNode.insertBefore(child, container.nextSibling);
       break;
   }
 };
