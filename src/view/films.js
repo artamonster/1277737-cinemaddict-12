@@ -1,26 +1,7 @@
-import {createElement} from '../helpers/utils.js';
+import AbstractComponent from './abstract-component.js';
 
-const createFilms = () => `<section class="films"></section>`;
-
-
-export default class FilmsView {
-  constructor() {
-    this._element = null;
-  }
-
+export default class FilmsView extends AbstractComponent {
   getTemplate() {
-    return createFilms();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return `<section class="films"></section>`;
   }
 }

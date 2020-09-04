@@ -1,4 +1,5 @@
-import {formatDuration, getFileName, createElement} from '../helpers/utils';
+import AbstractComponent from './abstract-component.js';
+import {formatDuration, getFileName} from '../helpers/common';
 
 const createFilmDetails = (filmCard) => {
   const {
@@ -167,25 +168,18 @@ const createFilmDetails = (filmCard) => {
   </section>`;
 };
 
-export default class FilmDetailsView {
-  constructor(filmCard) {
-    this._filmCard = filmCard;
-    this._element = null;
+export default class FilmDetailsView extends AbstractComponent {
+  constructor(film) {
+    super();
+    this._film = film;
   }
 
   getTemplate() {
-    return createFilmDetails(this._filmCard);
+    return createFilmDetails(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setCloseDetailsButtonClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, handler);
   }
 }
