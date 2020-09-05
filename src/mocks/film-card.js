@@ -2,7 +2,8 @@ import {text} from '../helpers/const';
 import {getRandomErratic,
   getRandomIntInclusive,
   getRandomArrayItem,
-  getRandomBooleanValue} from '../helpers/common';
+  getRandomBooleanValue,
+  generateDate} from '../helpers/common';
 
 const filmTitles = [
   `Apocalypse Now`,
@@ -62,7 +63,7 @@ const generateDescription = () => {
 const generateFilmCard = () => ({
   title: getRandomArrayItem(filmTitles),
   rate: +getRandomErratic(0, 10).toFixed(1),
-  year: getRandomIntInclusive(1940, 2020),
+  date: generateDate(),
   genre: getRandomArrayItem(genres),
   duration: getRandomIntInclusive(10, 180),
   description: generateDescription(),

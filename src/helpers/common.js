@@ -1,4 +1,4 @@
-
+import {MAX_DAY_GAP, DATE_LOCALE} from "./const";
 
 const getRandomErratic = (min, max) => Math.random() * (max - min) + min;
 
@@ -32,11 +32,33 @@ const getFileName = (title) => title
   .map((word) => word.toLowerCase())
   .join(`-`);
 
+export const humanizeFilmReleaseDate = (date) => {
+  const day = (`0` + date.getDate()).slice(-2);
+  const month = date.toLocaleString(DATE_LOCALE, {month: `long`});
+  return `${day} ${month} ${date.getFullYear()}`;
+};
+
+export const humanizeFilmReleaseYear = (date) => {
+  return date.toLocaleString(DATE_LOCALE, {year: `numeric`});
+};
+
+const generateDate = () => {
+  const daysGap = getRandomIntInclusive(-MAX_DAY_GAP, MAX_DAY_GAP);
+  const currentDate = new Date();
+
+  currentDate.setHours(getRandomIntInclusive(0, 23), getRandomIntInclusive(0, 59));
+
+  currentDate.setDate(currentDate.getDate() + daysGap);
+
+  return currentDate;
+};
+
 export {
   getRandomErratic,
   getRandomIntInclusive,
   getRandomArrayItem,
   getRandomBooleanValue,
   formatDuration,
-  getFileName
+  getFileName,
+  generateDate
 };
