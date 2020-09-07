@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {formatDuration, getFileName} from '../helpers/common';
+import {formatDuration, getFileName, humanizeFilmReleaseYear} from '../helpers/common';
 
 const setControlClass = (control) => control ? `film-card__controls-item--active` : ``;
 
@@ -7,7 +7,7 @@ const createFilmCard = (filmCard) => {
   const {
     title,
     rate,
-    year,
+    date,
     duration,
     genre,
     description,
@@ -19,12 +19,13 @@ const createFilmCard = (filmCard) => {
 
   const formattedDuration = formatDuration(duration);
   const fileName = getFileName(title);
+  const filmDate = humanizeFilmReleaseYear(date);
 
   return `<article class="film-card">
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rate}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${year}</span>
+      <span class="film-card__year">${filmDate}</span>
       <span class="film-card__duration">${formattedDuration}</span>
       <span class="film-card__genre">${genre}</span>
     </p>

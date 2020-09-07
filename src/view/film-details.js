@@ -1,11 +1,11 @@
 import AbstractComponent from './abstract-component.js';
-import {formatDuration, getFileName} from '../helpers/common';
+import {formatDuration, getFileName, humanizeFilmReleaseDate} from '../helpers/common';
 
 const createFilmDetails = (filmCard) => {
   const {
     title,
     rate,
-    year,
+    date,
     duration,
     genre,
     description,
@@ -51,7 +51,7 @@ const createFilmDetails = (filmCard) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">30 March ${year}</td>
+                <td class="film-details__cell">${humanizeFilmReleaseDate(date)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>

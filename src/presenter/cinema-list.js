@@ -10,12 +10,15 @@ import LoadMoreButtonView from "../view/button-show-more.js";
 import FilmsListTopRatedView from "../view/film-list-top-rated.js";
 import FilmsListMostCommentedView from "../view/film-list-most-commented.js";
 import {RenderPosition, render, remove} from '../helpers/render';
-import {SHOWING_FILM_CARD_COUNT_BY_BUTTON, SHOWING_FILM_CARD_COUNT_ON_START} from "../helpers/const";
+import {SHOWING_FILM_CARD_COUNT_BY_BUTTON, SHOWING_FILM_CARD_COUNT_ON_START, SortType} from "../helpers/const";
+import {sortFilmsByDate, sortFilmsByRating} from "../helpers/filter.js";
 
 class CinemaListPresenter {
   constructor(filmsContainer) {
     this._filmsContainer = filmsContainer;
+    this._renderedFilmCount = SHOWING_FILM_CARD_COUNT_ON_START;
 
+    this._currentSortType = SortType.DEFAULT;
     this._filmsComponent = new FilmsView();
     this._filmsListComponent = new FilmsListView();
     this._filmListContainerComponent = new FilmsListContainerView();
@@ -23,11 +26,14 @@ class CinemaListPresenter {
     this._loadMoreButtonComponent = new LoadMoreButtonView();
     this._filmsListTopRatedComponent = new FilmsListTopRatedView();
     this._filmsListMostCommentedComponent = new FilmsListMostCommentedView();
+
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(films, topRatedFilms, mostCommentedFilms) {
-    this._films = films.slice();
+    this._films = films;
 
+    this._sourcedFilms = films.slice();
     this._topRatedFilms = topRatedFilms;
     this._mostCommentedFilms = mostCommentedFilms;
 
@@ -35,8 +41,47 @@ class CinemaListPresenter {
     render(this._filmsComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
     this._renderBoard();
   }
-  _renderSort() {
-    render(this._filmsContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+  _sortFilms(sortType) {
+    switch (sortType) {
+      case SortType.DATE:
+        this._films.sort(sortFilmsByDate);
+        break;
+      case SortType.RATING:
+        this._films.sort(sortFilmsByRating);
+        break;
+      default:
+        this._films = this._sourcedFilms.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortFilms(sortType);
+
+    this._clearFilmsList();
+    this._clearSort();
+    this._renderFilmsList();
+    this._renderSort(this._filmsComponent, RenderPosition.BEFORE);
+  }
+
+  _clearSort() {
+    this._sortComponent.getElement().remove();
+    this._sortComponent.removeElement();
+  }
+
+  _clearFilmsList() {
+    this._filmListContainerComponent.getElement().innerHTML = ``;
+    this._renderedFilmCount = SHOWING_FILM_CARD_COUNT_ON_START;
+  }
+
+  _renderSort(container = this._filmsContainer, position = RenderPosition.AFTERBEGIN) {
+    render(container, this._sortComponent, position);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderNoFilms() {
@@ -121,16 +166,14 @@ class CinemaListPresenter {
   _renderShowMoreButton() {
     render(this._filmsListComponent, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
 
-    let showingFilmCardsCount = SHOWING_FILM_CARD_COUNT_ON_START;
-
     this._loadMoreButtonComponent.setClickHandler(() => {
-      const prevFilmCardsCount = showingFilmCardsCount;
-      showingFilmCardsCount += SHOWING_FILM_CARD_COUNT_BY_BUTTON;
       this._films
-        .slice(prevFilmCardsCount, showingFilmCardsCount)
+        .slice(this._renderedFilmCount, this._renderedFilmCount + SHOWING_FILM_CARD_COUNT_BY_BUTTON)
         .forEach((film) => this._renderFilm(film));
 
-      if (showingFilmCardsCount >= this._films.length) {
+      this._renderedFilmCount += SHOWING_FILM_CARD_COUNT_BY_BUTTON;
+
+      if (this._renderedFilmCount >= this._films.length) {
         remove(this._loadMoreButtonComponent);
       }
     });
