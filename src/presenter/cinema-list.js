@@ -143,7 +143,7 @@ class CinemaListPresenter {
       .forEach((film) => this._renderFilm(film, topRatedFilmsElement));
   }
 
-  _renderMostRecommendedFilmsList() {
+  _renderMostCommentedFilmsList() {
     if (this._mostCommentedFilms.length === 0) {
       return;
     }
@@ -189,7 +189,7 @@ class CinemaListPresenter {
 
     this._renderTopRatedFilmsList();
 
-    this._renderMostRecommendedFilmsList();
+    this._renderMostCommentedFilmsList();
   }
 }
 

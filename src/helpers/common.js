@@ -26,7 +26,6 @@ const formatDuration = (duration) => {
   return `${formatingHours} ${formatingMinutes}`;
 };
 
-
 const getFileName = (title) => title
   .split(` `)
   .map((word) => word.toLowerCase())

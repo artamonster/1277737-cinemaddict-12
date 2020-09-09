@@ -5,7 +5,7 @@ import {getRandomErratic,
   getRandomBooleanValue,
   generateDate} from '../helpers/common';
 
-const filmTitles = [
+const FilmTitles = [
   `Apocalypse Now`,
   `Blade Runner`,
   `Dark`,
@@ -23,7 +23,7 @@ const filmTitles = [
   `Serenity`,
 ];
 
-const genres = [
+const Genres = [
   `Action`,
   `Animation`,
   `Cartoon`,
@@ -40,7 +40,6 @@ const genres = [
   `Thriller`,
   `Western`,
 ];
-
 
 const generateDescription = () => {
   const sentences = text
@@ -61,10 +60,10 @@ const generateDescription = () => {
 
 
 const generateFilmCard = () => ({
-  title: getRandomArrayItem(filmTitles),
+  title: getRandomArrayItem(FilmTitles),
   rate: +getRandomErratic(0, 10).toFixed(1),
   date: generateDate(),
-  genre: getRandomArrayItem(genres),
+  genre: getRandomArrayItem(Genres),
   duration: getRandomIntInclusive(10, 180),
   description: generateDescription(),
   commentsCount: getRandomIntInclusive(0, 100),
