@@ -12,3 +12,9 @@ export const SortType = {
   RATING: `rating`
 };
 export const DATE_LOCALE = `en-US`;
+export const Mode = {
+  CLOSED: `CLOSED`,
+  OPENED: `OPENED`
+};
+export const EMOJI_WIDTH = 55;
+export const EMOJI_HEIGHT = 55;

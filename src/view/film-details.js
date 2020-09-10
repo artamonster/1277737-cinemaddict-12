@@ -1,14 +1,16 @@
-import AbstractComponent from './abstract-component.js';
+import SmartComponent from "./smart";
 import {
   formatDuration,
   getFileName,
   createRatingText,
   humanizeFilmReleaseDate
 } from '../helpers/common';
+import {EMOJI_WIDTH, EMOJI_HEIGHT} from "../helpers/const";
 
 const createGenresMarkup = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
   .join(`\n`);
+
 const createControlItemMarkup = (name, labelText, isActive) => {
   return `<input
     type="checkbox"
@@ -21,6 +23,7 @@ const createControlItemMarkup = (name, labelText, isActive) => {
     class="film-details__control-label film-details__control-label--${name}"
   >${labelText}</label>`;
 };
+
 const createRatingScoreMarkup = (userRating) => {
   const from = 1;
   const to = 9;
@@ -64,7 +67,7 @@ const createCommentsListMarkup = (comments) => comments
 
 const createGenresTitleText = (genres) => genres.length > 1 ? `Genres` : `Genre`;
 
-const createFilmDetails = (filmCard, options = {}) => {
+const createFilmDetails = (film, options = {}) => {
   const {
     title,
     rating,
@@ -73,7 +76,7 @@ const createFilmDetails = (filmCard, options = {}) => {
     genres,
     description,
     comments,
-  } = filmCard;
+  } = film;
 
   const {
     userRating,
@@ -205,18 +208,95 @@ const createFilmDetails = (filmCard, options = {}) => {
   </section>`;
 };
 
-export default class FilmDetailsView extends AbstractComponent {
+export default class FilmDetailsView extends SmartComponent {
   constructor(film) {
     super();
     this._film = film;
+    this._data = FilmDetailsView.parseFilmToData(film);
+
+    this._closePopupFilmDetailHandler = this._closePopupFilmDetailHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._alreadyWatchClickHandler = this._alreadyWatchClickHandler.bind(this);
+    this._inWatchlistClickHandler = this._inWatchlistClickHandler.bind(this);
+    this._emotionClickHandler = this._emotionClickHandler.bind(this);
+
+    this._setInnerHandlers();
+  }
+  _setInnerHandlers() {
+    const emoji = this.getElement()
+      .querySelectorAll(`.film-details__emoji-label`);
+
+    emoji.forEach((element) => {
+      element.addEventListener(`click`, this._emotionClickHandler);
+    });
+  }
+
+  _emotionClickHandler(evt) {
+    const emojiBlockElement = evt.currentTarget.closest(`.film-details__new-comment`).querySelector(`.film-details__add-emoji-label`);
+    let img = document.createElement(`img`);
+    img.width = EMOJI_WIDTH;
+    img.heigth = EMOJI_HEIGHT;
+    img.src = evt.currentTarget.querySelector(`img`).src;
+    emojiBlockElement.innerHTML = ``;
+    emojiBlockElement.append(img);
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  _alreadyWatchClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.alreadyWatchClick();
+  }
+
+  _inWatchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.inWatchlistClick();
+  }
+
+  _closePopupFilmDetailHandler() {
+    this._callback.closeFilmDetail();
+  }
+
+  setClosePopupFilmDetailHandler(callback) {
+    this._callback.closeFilmDetail = callback;
+
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closePopupFilmDetailHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  setAlreadyWatchClickHandler(callback) {
+    this._callback.alreadyWatchClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._alreadyWatchClickHandler);
+  }
+
+  setInWatchlistClickHandler(callback) {
+    this._callback.inWatchlistClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._inWatchlistClickHandler);
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+        {},
+        film
+    );
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setClosePopupFilmDetailHandler(this._callback.closeFilmDetail);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setAlreadyWatchClickHandler(this._callback.alreadyWatchClick);
+    this.setInWatchlistClickHandler(this._callback.inWatchlistClick);
   }
 
   getTemplate() {
-    return createFilmDetails(this._film);
-  }
-
-  setCloseDetailsButtonClickHandler(handler) {
-    this.getElement().querySelector(`.film-details__close-btn`)
-      .addEventListener(`click`, handler);
+    return createFilmDetails(this._data);
   }
 }

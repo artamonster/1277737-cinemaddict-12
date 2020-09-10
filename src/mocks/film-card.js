@@ -54,16 +54,17 @@ const Users = [
   `Vasya`,
   `Druzhok-Kuraek`,
   `Armin Van Buuren`,
-  `Ferry Corsten`,
+  `Shia LaBeouf`,
   `Christopher Lawrence`,
-  `Laura`,
-  `Lizzy`,
-  `Benny Benassi`,
+  `Laure Sainclair`,
+  `Lizzy Burden`,
+  `Ostap Bender`,
   `Johan Gielen`,
   `Markus Schulz`,
   `Joyful Grape`,
-  `Max Graham`,
+  `Jason Statham`,
 ];
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const getRandomCommentDate = () => {
   const currentDate = Date.now();
@@ -118,6 +119,7 @@ const generateFilmCard = () => {
   const isWatched = getRandomBooleanValue();
 
   return {
+    id: generateId(),
     title: getRandomArrayItem(FilmTitles),
     rating,
     userRating: isWatched && rating ? userRating : null,
