@@ -1,47 +1,61 @@
 import AbstractComponent from './abstract-component.js';
-import {formatDuration, getFileName, humanizeFilmReleaseYear} from '../helpers/common';
+import {formatDuration, getFileName, humanizeFilmReleaseYear, createRatingText} from '../helpers/common';
 
-const setControlClass = (control) => control ? `film-card__controls-item--active` : ``;
+const createControlItemMarkup = (name, buttonText, isActive) =>
+  `<button
+    class="film-card__controls-item button
+    film-card__controls-item--${name}
+    ${isActive ? `film-card__controls-item--active` : ``}
+  ">${buttonText}</button>`;
+
+const createCommentsTitleText = (comments) => {
+  switch (comments.length) {
+    case 0:
+      return `no comments yet`;
+    case 1:
+      return `1 comment`;
+    default:
+      return `${comments.length} comments`;
+  }
+};
+
 
 const createFilmCard = (filmCard) => {
   const {
     title,
-    rate,
+    rating,
     date,
     duration,
-    genre,
+    genres,
     description,
     commentsCount,
     isInWatchlist,
     isWatched,
     isFavorite,
+    comments,
   } = filmCard;
 
-  const formattedDuration = formatDuration(duration);
-  const fileName = getFileName(title);
   const filmDate = humanizeFilmReleaseYear(date);
-
+  const [mainGenre] = genres;
+  const watchlistButton = createControlItemMarkup(`add-to-watchlist`, `Add to watchlist`, isInWatchlist);
+  const watchedButton = createControlItemMarkup(`mark-as-watched`, `Mark as watched`, isWatched);
+  const favoriteButton = createControlItemMarkup(`favorite`, `Mark as favorite`, isFavorite);
   return `<article class="film-card">
     <h3 class="film-card__title">${title}</h3>
-    <p class="film-card__rating">${rate}</p>
+    <p class="film-card__rating">${createRatingText(rating)}</p>
     <p class="film-card__info">
       <span class="film-card__year">${filmDate}</span>
-      <span class="film-card__duration">${formattedDuration}</span>
-      <span class="film-card__genre">${genre}</span>
+      <span class="film-card__duration">${formatDuration(duration)}</span>
+      <span class="film-card__genre">${mainGenre}</span>
     </p>
-    <img src="./images/posters/${fileName}.jpg" alt="" class="film-card__poster">
+    <img src="./images/posters/${getFileName(title)}.jpg" alt="${title}" class="film-card__poster">
     <p class="film-card__description">${description}</p>
     <a class="film-card__comments">${commentsCount} comments</a>
+    <a class="film-card__comments">${createCommentsTitleText(comments)}</a>
     <form class="film-card__controls">
-      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${setControlClass(isInWatchlist)}">
-        Add to watchlist
-      </button>
-      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched  ${setControlClass(isWatched)}">
-        Mark as watched
-      </button>
-      <button class="film-card__controls-item button film-card__controls-item--favorite  ${setControlClass(isFavorite)}">
-        Mark as favorite
-      </button>
+      ${watchlistButton}
+      ${watchedButton}
+      ${favoriteButton}
     </form>
   </article>`;
 };
