@@ -1,23 +1,24 @@
+import Film from "./film";
 import FilmsView from "../view/films.js";
 import FilmsListView from "../view/film-list.js";
 import FilmsListContainerView from "../view/film-list-container.js";
 import FilmsListNoMoviesView from "../view/film-list-no-movies.js";
 import FilmsListTitleView from "../view/film-list-title.js";
 import SortListView from "../view/site-sorting.js";
-import FilmCardView from "../view/film-card.js";
-import FilmDetailsView from "../view/film-details.js";
 import LoadMoreButtonView from "../view/button-show-more.js";
 import FilmsListTopRatedView from "../view/film-list-top-rated.js";
 import FilmsListMostCommentedView from "../view/film-list-most-commented.js";
 import {RenderPosition, render, remove} from '../helpers/render';
 import {SHOWING_FILM_CARD_COUNT_BY_BUTTON, SHOWING_FILM_CARD_COUNT_ON_START, SortType} from "../helpers/const";
 import {sortFilmsByDate, sortFilmsByRating} from "../helpers/filter.js";
+import {updateItem} from "../helpers/common.js";
 
 class CinemaListPresenter {
   constructor(filmsContainer) {
     this._filmsContainer = filmsContainer;
     this._renderedFilmCount = SHOWING_FILM_CARD_COUNT_ON_START;
 
+    this._filmPresenter = {};
     this._currentSortType = SortType.DEFAULT;
     this._filmsComponent = new FilmsView();
     this._filmsListComponent = new FilmsListView();
@@ -28,6 +29,8 @@ class CinemaListPresenter {
     this._filmsListMostCommentedComponent = new FilmsListMostCommentedView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(films, topRatedFilms, mostCommentedFilms) {
@@ -41,6 +44,19 @@ class CinemaListPresenter {
     render(this._filmsComponent, this._filmsListComponent, RenderPosition.BEFOREEND);
     this._renderBoard();
   }
+
+  _handleFilmChange(updatedFilm) {
+    this._boardFilms = updateItem(this._boardFilms, updatedFilm);
+    this._sourcedBoardFilms = updateItem(this._sourcedBoardFilms, updatedFilm);
+    this._filmPresenter[updatedFilm.id].init(updatedFilm);
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._filmPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
   _sortFilms(sortType) {
     switch (sortType) {
       case SortType.DATE:
@@ -75,7 +91,10 @@ class CinemaListPresenter {
   }
 
   _clearFilmsList() {
-    this._filmListContainerComponent.getElement().innerHTML = ``;
+    Object
+      .values(this._filmPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._filmPresenter = {};
     this._renderedFilmCount = SHOWING_FILM_CARD_COUNT_ON_START;
   }
 
@@ -89,35 +108,9 @@ class CinemaListPresenter {
   }
 
   _renderFilm(film, container = this._filmListContainerComponent) {
-    const filmCard = new FilmCardView(film);
-    const filmDetails = new FilmDetailsView(film);
-    const footerElement = document.querySelector(`.footer`);
-
-    const onEscKeyDown = (evt) => {
-      const escKey = evt.key === `Escape` || evt.key === `Esc`;
-      if (escKey) {
-        closeFilmDetails(evt);
-      }
-    };
-
-    const openFilmDetails = (evt) => {
-      render(footerElement, filmDetails, RenderPosition.AFTEREND);
-      evt.preventDefault();
-      filmDetails.setCloseDetailsButtonClickHandler(closeFilmDetails);
-      document.addEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const closeFilmDetails = (evt) => {
-      evt.preventDefault();
-      remove(filmDetails);
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    filmCard.setFilmPosterClickHandler(openFilmDetails);
-    filmCard.setFilmTitleClickHandler(openFilmDetails);
-    filmCard.setFilmCommentsClickHandler(openFilmDetails);
-
-    render(container, filmCard, RenderPosition.BEFOREEND);
+    const filmPresenter = new Film(container, this._handleFilmChange, this._handleModeChange);
+    filmPresenter.init(film);
+    this._filmPresenter[film.id] = filmPresenter;
   }
   _renderFilmsList() {
     render(this._filmsListComponent, new FilmsListTitleView(), RenderPosition.BEFOREEND);
@@ -143,7 +136,7 @@ class CinemaListPresenter {
       .forEach((film) => this._renderFilm(film, topRatedFilmsElement));
   }
 
-  _renderMostRecommendedFilmsList() {
+  _renderMostCommentedFilmsList() {
     if (this._mostCommentedFilms.length === 0) {
       return;
     }
@@ -189,7 +182,7 @@ class CinemaListPresenter {
 
     this._renderTopRatedFilmsList();
 
-    this._renderMostRecommendedFilmsList();
+    this._renderMostCommentedFilmsList();
   }
 }
 
