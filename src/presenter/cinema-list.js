@@ -1,4 +1,4 @@
-import FilmPresenter from "./filmPresenter";
+import FilmPresenter from "./film";
 import FilmsView from "../view/films.js";
 import FilmsListView from "../view/film-list.js";
 import FilmsListContainerView from "../view/film-list-container.js";
