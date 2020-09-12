@@ -3,7 +3,7 @@ import FilmDetailsView from "../view/film-details.js";
 import {RenderPosition, render, remove, replaceElement} from '../helpers/render';
 import {Mode} from "../helpers/const";
 
-export default class Film {
+export default class FilmPresenter {
   constructor(filmListContainer, changeData, changeMode) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;

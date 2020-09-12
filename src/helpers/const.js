@@ -11,7 +11,6 @@ export const SortType = {
   DATE: `date`,
   RATING: `rating`
 };
-export const DATE_LOCALE = `en-US`;
 export const Mode = {
   CLOSED: `CLOSED`,
   OPENED: `OPENED`

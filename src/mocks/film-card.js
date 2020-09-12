@@ -1,4 +1,4 @@
-import {text} from '../helpers/const';
+import {text, MAX_DAY_GAP} from '../helpers/const';
 import {
   getRandomIntInclusive,
   getRandomErratic,
@@ -47,7 +47,6 @@ const Emotions = [
   `puke`,
   `sleeping`,
   `smile`,
-  `trophy`,
 ];
 
 const Users = [
@@ -123,7 +122,7 @@ const generateFilmCard = () => {
     title: getRandomArrayItem(FilmTitles),
     rating,
     userRating: isWatched && rating ? userRating : null,
-    date: generateDate(),
+    date: generateDate(-MAX_DAY_GAP, 0),
     genres: [...new Set(generateGenres(Genres))],
     duration: getRandomIntInclusive(10, 180),
     description: generateDescription(),

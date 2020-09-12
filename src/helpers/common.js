@@ -1,4 +1,5 @@
-import {MAX_DAY_GAP, DATE_LOCALE} from "./const";
+import {MAX_DAY_GAP} from "./const";
+import moment from "moment";
 
 export const getRandomIntInclusive = (min, max) => {
   min = Math.ceil(min);
@@ -20,15 +21,6 @@ export const getRandomErratic = (from = 1, to = 0) => {
 };
 export const getRandomBooleanValue = () => Math.random() >= 0.5;
 
-export const formatDuration = (duration) => {
-  const hours = Math.floor(duration / 60);
-  const minutes = duration % 60;
-  const formatingHours = hours > 0 ? `${hours}h` : ``;
-  const formatingMinutes = minutes > 10 ? `${minutes}m` : `0${minutes}m`;
-
-  return `${formatingHours} ${formatingMinutes}`;
-};
-
 export const getFileName = (title) => title
   .split(` `)
   .map((word) => word.toLowerCase())
@@ -36,18 +28,40 @@ export const getFileName = (title) => title
 
 export const createRatingText = (rating) => rating || `N/A`;
 
-export const humanizeFilmReleaseDate = (date) => {
-  const day = (`0` + date.getDate()).slice(-2);
-  const month = date.toLocaleString(DATE_LOCALE, {month: `long`});
-  return `${day} ${month} ${date.getFullYear()}`;
+const formatDateByTemplate = (date, format) => {
+  if (!(date instanceof Date)) {
+    return ``;
+  }
+
+  return moment(date).format(format);
 };
 
-export const humanizeFilmReleaseYear = (date) => {
-  return date.toLocaleString(DATE_LOCALE, {year: `numeric`});
+export const formatFilmReleaseDate = (dueDate) => {
+  return formatDateByTemplate(dueDate, `YYYY`);
 };
 
-export const generateDate = () => {
-  const daysGap = getRandomIntInclusive(-MAX_DAY_GAP, MAX_DAY_GAP);
+export const formatFilmDetailReleaseDate = (date) => {
+  return formatDateByTemplate(date, `DD MMMM YYYY`);
+};
+
+export const formatFilmDuration = (duration) => {
+  if (!duration) {
+    return ``;
+  }
+
+  const momentDuration = moment.duration(duration, `minutes`);
+  return `${momentDuration.hours()}h ${momentDuration.minutes()}m`;
+};
+export const humanizeCommentDate = (date) => {
+  if (!(date instanceof Date)) {
+    return ``;
+  }
+
+  return moment(date).fromNow();
+};
+
+export const generateDate = (start = -MAX_DAY_GAP, to = MAX_DAY_GAP) => {
+  const daysGap = getRandomIntInclusive(start, to);
   const currentDate = new Date();
 
   currentDate.setHours(getRandomIntInclusive(0, 23), getRandomIntInclusive(0, 59));

@@ -1,9 +1,10 @@
 import SmartComponent from "./smart";
 import {
-  formatDuration,
+  formatFilmDuration,
   getFileName,
   createRatingText,
-  humanizeFilmReleaseDate
+  formatFilmDetailReleaseDate,
+  humanizeCommentDate,
 } from '../helpers/common';
 import {EMOJI_WIDTH, EMOJI_HEIGHT} from "../helpers/const";
 
@@ -47,7 +48,7 @@ const createRatingScoreMarkup = (userRating) => {
 
 const createCommentsListMarkup = (comments) => comments
   .map((comment) => {
-    const {text, emotions, author} = comment;
+    const {text, emotions, author, date} = comment;
     return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotions}.png" width="55" height="55" alt="emoji">
@@ -56,7 +57,7 @@ const createCommentsListMarkup = (comments) => comments
       <p class="film-details__comment-text">${text}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">Today</span>
+        <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
@@ -85,7 +86,7 @@ const createFilmDetails = (film, options = {}) => {
     isFavorite,
   } = options;
 
-  const filmDate = humanizeFilmReleaseDate(date);
+  const filmDate = formatFilmDetailReleaseDate(date);
   const fileName = getFileName(title);
   const watchlistItem = createControlItemMarkup(`watchlist`, `Add to watchlist`, isInWatchlist);
   const watchedItem = createControlItemMarkup(`watched`, `Already watched`, isWatched);
@@ -132,7 +133,7 @@ const createFilmDetails = (film, options = {}) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${formatDuration(duration)}</td>
+                <td class="film-details__cell">${formatFilmDuration(duration)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>

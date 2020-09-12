@@ -1,4 +1,4 @@
-import Film from "./film";
+import FilmPresenter from "./filmPresenter";
 import FilmsView from "../view/films.js";
 import FilmsListView from "../view/film-list.js";
 import FilmsListContainerView from "../view/film-list-container.js";
@@ -108,7 +108,7 @@ class CinemaListPresenter {
   }
 
   _renderFilm(film, container = this._filmListContainerComponent) {
-    const filmPresenter = new Film(container, this._handleFilmChange, this._handleModeChange);
+    const filmPresenter = new FilmPresenter(container, this._handleFilmChange, this._handleModeChange);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }
