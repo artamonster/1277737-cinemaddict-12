@@ -17,3 +17,5 @@ export const Mode = {
 };
 export const EMOJI_WIDTH = 55;
 export const EMOJI_HEIGHT = 55;
+export const FILM_DETAIL_DATE_FORMAT = `DD MMMM YYYY`;
+export const FILM_CARD_DATE_FORMAT = `YYYY`;

@@ -1,4 +1,4 @@
-import {MAX_DAY_GAP} from "./const";
+import {MAX_DAY_GAP, FILM_DETAIL_DATE_FORMAT, FILM_CARD_DATE_FORMAT} from "./const";
 import moment from "moment";
 
 export const getRandomIntInclusive = (min, max) => {
@@ -37,11 +37,11 @@ const formatDateByTemplate = (date, format) => {
 };
 
 export const formatFilmReleaseDate = (dueDate) => {
-  return formatDateByTemplate(dueDate, `YYYY`);
+  return formatDateByTemplate(dueDate, FILM_CARD_DATE_FORMAT);
 };
 
 export const formatFilmDetailReleaseDate = (date) => {
-  return formatDateByTemplate(date, `DD MMMM YYYY`);
+  return formatDateByTemplate(date, FILM_DETAIL_DATE_FORMAT);
 };
 
 export const formatFilmDuration = (duration) => {
