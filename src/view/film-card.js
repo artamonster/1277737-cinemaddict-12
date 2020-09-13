@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {formatDuration, getFileName, humanizeFilmReleaseYear, createRatingText} from '../helpers/common';
+import {formatFilmDuration, getFileName, formatFilmReleaseDate, createRatingText} from '../helpers/common';
 
 const createControlItemMarkup = (name, buttonText, isActive) =>
   `<button
@@ -34,7 +34,7 @@ const createFilmCard = (film) => {
     comments,
   } = film;
 
-  const filmDate = humanizeFilmReleaseYear(date);
+  const filmDate = formatFilmReleaseDate(date);
   const [mainGenre] = genres;
   const watchlistButton = createControlItemMarkup(`add-to-watchlist`, `Add to watchlist`, isInWatchlist);
   const watchedButton = createControlItemMarkup(`mark-as-watched`, `Mark as watched`, isWatched);
@@ -44,7 +44,7 @@ const createFilmCard = (film) => {
     <p class="film-card__rating">${createRatingText(rating)}</p>
     <p class="film-card__info">
       <span class="film-card__year">${filmDate}</span>
-      <span class="film-card__duration">${formatDuration(duration)}</span>
+      <span class="film-card__duration">${formatFilmDuration(duration)}</span>
       <span class="film-card__genre">${mainGenre}</span>
     </p>
     <img src="./images/posters/${getFileName(title)}.jpg" alt="${title}" class="film-card__poster">
