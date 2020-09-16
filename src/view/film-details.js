@@ -25,27 +25,6 @@ const createControlItemMarkup = (name, labelText, isActive) => {
   >${labelText}</label>`;
 };
 
-const createRatingScoreMarkup = (userRating) => {
-  const from = 1;
-  const to = 9;
-  const result = [];
-  for (let i = from; i <= to; i++) {
-    result.push(`<input
-      type="radio"
-      name="score"
-      class="film-details__user-rating-input visually-hidden"
-      value="${i}"
-      id="rating-${i}"
-      ${userRating === i ? `checked` : ``}
-    >
-    <label
-      class="film-details__user-rating-label"
-      for="rating-${i}"
-    >${i}</label>`);
-  }
-  return result.join(`\n`);
-};
-
 const createCommentsListMarkup = (comments) => comments
   .map((comment) => {
     const {text, emotions, author, date} = comment;
@@ -65,10 +44,9 @@ const createCommentsListMarkup = (comments) => comments
   })
   .join(`\n`);
 
-
 const createGenresTitleText = (genres) => genres.length > 1 ? `Genres` : `Genre`;
 
-const createFilmDetails = (film, options = {}) => {
+const createFilmDetails = (film) => {
   const {
     title,
     rating,
@@ -77,14 +55,10 @@ const createFilmDetails = (film, options = {}) => {
     genres,
     description,
     comments,
-  } = film;
-
-  const {
-    userRating,
     isInWatchlist,
     isWatched,
     isFavorite,
-  } = options;
+  } = film;
 
   const filmDate = formatFilmDetailReleaseDate(date);
   const fileName = getFileName(title);
@@ -111,7 +85,6 @@ const createFilmDetails = (film, options = {}) => {
               </div>
               <div class="film-details__rating">
                 <p class="film-details__total-rating">${createRatingText(rating)}</p>
-                ${userRating ? `<p class="film-details__user-rating">Your rate ${userRating}</p>` : ``}
               </div>
             </div>
             <table class="film-details__table">
@@ -153,25 +126,7 @@ const createFilmDetails = (film, options = {}) => {
           ${favoriteItem}
         </section>
       </div>
-      ${isWatched ? `<div class="form-details__middle-container">
-        <section class="film-details__user-rating-wrap">
-          <div class="film-details__user-rating-controls">
-            <button class="film-details__watched-reset" type="button">Undo</button>
-          </div>
-          <div class="film-details__user-score">
-            <div class="film-details__user-rating-poster">
-              <img src="./images/posters/${fileName}.jpg" alt="film-poster" class="film-details__user-rating-img">
-            </div>
-            <section class="film-details__user-rating-inner">
-              <h3 class="film-details__user-rating-title">${title}</h3>
-              <p class="film-details__user-rating-feelings">How you feel it?</p>
-              <div class="film-details__user-rating-score">
-                ${createRatingScoreMarkup(userRating)}
-              </div>
-            </section>
-          </div>
-        </section>
-      </div>` : ``}
+
       <div class="form-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
@@ -263,7 +218,6 @@ export default class FilmDetailsView extends SmartComponent {
 
   setClosePopupFilmDetailHandler(callback) {
     this._callback.closeFilmDetail = callback;
-
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closePopupFilmDetailHandler);
   }
 

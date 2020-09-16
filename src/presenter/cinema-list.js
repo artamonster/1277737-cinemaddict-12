@@ -46,8 +46,8 @@ class CinemaListPresenter {
   }
 
   _handleFilmChange(updatedFilm) {
-    this._boardFilms = updateItem(this._boardFilms, updatedFilm);
-    this._sourcedBoardFilms = updateItem(this._sourcedBoardFilms, updatedFilm);
+    this._films = updateItem(this._films, updatedFilm);
+    this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
     this._filmPresenter[updatedFilm.id].init(updatedFilm);
   }
 

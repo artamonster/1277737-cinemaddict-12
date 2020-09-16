@@ -114,14 +114,11 @@ const generateComments = () => {
 
 const generateFilmCard = () => {
   const rating = getRandomErratic(1, 10);
-  const userRating = getRandomBooleanValue() ? getRandomIntInclusive(1, 9) : null;
-  const isWatched = getRandomBooleanValue();
 
   return {
     id: generateId(),
     title: getRandomArrayItem(FilmTitles),
     rating,
-    userRating: isWatched && rating ? userRating : null,
     date: generateDate(-MAX_DAY_GAP, 0),
     genres: [...new Set(generateGenres(Genres))],
     duration: getRandomIntInclusive(10, 180),

@@ -46,11 +46,9 @@ export default class FilmPresenter {
       return;
     }
 
-    if (this._filmListContainer.getElement().contains(prevFilmCardComponent.getElement())) {
-      replaceElement(this._filmComponent, prevFilmCardComponent);
-    }
+    replaceElement(this._filmComponent, prevFilmCardComponent);
 
-    if (this._filmListContainer.getElement().contains(prevFilmDetailComponent.getElement())) {
+    if (this._mode === Mode.OPENED) {
       replaceElement(this._filmDetailComponent, prevFilmDetailComponent);
       this._filmDetailComponent.setClosePopupFilmDetailHandler(this._closeFilmDetailHandler);
     }
@@ -94,7 +92,7 @@ export default class FilmPresenter {
             {},
             this._film,
             {
-              inWatchlist: !this._film.inWatchlist
+              isInWatchlist: !this._film.isInWatchlist
             }
         )
     );
@@ -106,7 +104,7 @@ export default class FilmPresenter {
             {},
             this._film,
             {
-              isAlreadyWatched: !this._film.isAlreadyWatched
+              isWatched: !this._film.isWatched
             }
         )
     );
