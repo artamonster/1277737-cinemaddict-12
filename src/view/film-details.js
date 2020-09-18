@@ -7,6 +7,7 @@ import {
   humanizeCommentDate,
 } from '../helpers/common';
 import {EMOJI_WIDTH, EMOJI_HEIGHT} from "../helpers/const";
+import he from "he";
 
 const createGenresMarkup = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -33,7 +34,7 @@ const createCommentsListMarkup = (comments) => comments
       <img src="./images/emoji/${emotions}.png" width="55" height="55" alt="emoji">
     </span>
     <div>
-      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
