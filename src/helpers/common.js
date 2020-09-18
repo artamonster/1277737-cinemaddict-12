@@ -71,16 +71,3 @@ export const generateDate = (start = -MAX_DAY_GAP, to = MAX_DAY_GAP) => {
   return currentDate;
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
-};

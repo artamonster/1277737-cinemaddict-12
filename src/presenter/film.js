@@ -1,13 +1,16 @@
 import FilmCardView from "../view/film-card.js";
 import FilmDetailsView from "../view/film-details.js";
+import CommentsModel from "../model/comments";
 import {RenderPosition, render, remove, replaceElement} from '../helpers/render';
-import {Mode} from "../helpers/const";
+import {Mode, UserAction, UpdateType} from "../helpers/const";
+import {generateComment} from "../mocks/comment";
 
 export default class FilmPresenter {
   constructor(filmListContainer, changeData, changeMode) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._commentsModel = new CommentsModel();
 
     this._filmComponent = null;
     this._filmDetailComponent = null;
@@ -20,10 +23,14 @@ export default class FilmPresenter {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._alreadyWatchClickHandler = this._alreadyWatchClickHandler.bind(this);
     this._inWatchlistClickHandler = this._inWatchlistClickHandler.bind(this);
+
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
+    this._commentCtrlEnterAddHandler = this._commentCtrlEnterAddHandler.bind(this);
   }
 
   init(film) {
     this._film = film;
+    this._commentsModel.setComments(film.comments);
 
     const prevFilmCardComponent = this._filmComponent;
     const prevFilmDetailComponent = this._filmDetailComponent;
@@ -50,6 +57,8 @@ export default class FilmPresenter {
 
     if (this._mode === Mode.OPENED) {
       replaceElement(this._filmDetailComponent, prevFilmDetailComponent);
+      this._filmDetailComponent.setCommentDeleteHandler(this._commentDeleteClickHandler);
+      this._filmDetailComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
       this._filmDetailComponent.setClosePopupFilmDetailHandler(this._closeFilmDetailHandler);
     }
 
@@ -74,8 +83,49 @@ export default class FilmPresenter {
     this._mode = Mode.CLOSED;
   }
 
+  _commentDeleteClickHandler(commentId) {
+    this._commentsModel.deleteComment(UserAction.DELETE_COMMENT, commentId);
+    this._changeData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        Object.assign(
+            {},
+            this._film,
+            {
+              comments: this._commentsModel.getComments()
+            }
+        )
+    );
+  }
+
+  _commentCtrlEnterAddHandler(update) {
+    const comment = generateComment();
+
+    this._commentsModel.addComment(UserAction.ADD_COMMENT,
+        Object.assign(
+            {},
+            comment,
+            update
+        )
+    );
+
+    this._changeData(
+        UserAction.ADD_COMMENT,
+        UpdateType.PATCH,
+        Object.assign(
+            {},
+            this._film,
+            {
+              comments: this._commentsModel.getComments()
+            }
+        )
+    );
+  }
+
   _favoriteClickHandler() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -88,6 +138,8 @@ export default class FilmPresenter {
 
   _inWatchlistClickHandler() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -100,6 +152,8 @@ export default class FilmPresenter {
 
   _alreadyWatchClickHandler() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -120,6 +174,8 @@ export default class FilmPresenter {
   _openFilmDetailHandler() {
     render(this._filmListContainer, this._filmDetailComponent, RenderPosition.BEFOREEND);
 
+    this._filmDetailComponent.setCommentDeleteHandler(this._commentDeleteClickHandler);
+    this._filmDetailComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
     this._filmDetailComponent.setClosePopupFilmDetailHandler(this._closeFilmDetailHandler);
     this._filmDetailComponent.restoreHandlers();
 

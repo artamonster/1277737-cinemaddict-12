@@ -2,10 +2,10 @@ import AbstractComponent from './abstract-component.js';
 import {SortType} from "../helpers/const";
 
 export default class SortListView extends AbstractComponent {
-  constructor() {
+  constructor(currentSortType) {
     super();
 
-    this._sortType = SortType.DEFAULT;
+    this._sortType = currentSortType;
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 

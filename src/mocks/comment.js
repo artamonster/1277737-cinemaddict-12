@@ -1,7 +1,5 @@
 import {getRandomArrayItem, getRandomIntInclusive} from "../helpers/common";
-import {generateDescription} from "./film-card";
-
-const generateId = () => Math.random().toString(36).substr(2, 9);
+import {generateDescription, generateId} from "./film-card";
 
 const Emotions = [
   `angry`,
@@ -32,7 +30,7 @@ const getRandomCommentDate = () => {
   return new Date(currentDate - diffDate);
 };
 
-const generateComment = () => {
+export const generateComment = () => {
   return {
     id: generateId(),
     text: generateDescription(),

@@ -37,7 +37,7 @@ const createCommentsListMarkup = (comments) => comments
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-comment-id="${comment.id}">Delete</button>
       </p>
     </div>
   </li>`;
@@ -175,7 +175,8 @@ export default class FilmDetailsView extends SmartComponent {
     this._alreadyWatchClickHandler = this._alreadyWatchClickHandler.bind(this);
     this._inWatchlistClickHandler = this._inWatchlistClickHandler.bind(this);
     this._emotionClickHandler = this._emotionClickHandler.bind(this);
-
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._commentAddHandler = this._commentAddHandler.bind(this);
     this._setInnerHandlers();
   }
   _setInnerHandlers() {
@@ -216,6 +217,27 @@ export default class FilmDetailsView extends SmartComponent {
     this._callback.closeFilmDetail();
   }
 
+  _commentDeleteHandler(evt) {
+    evt.preventDefault();
+    const commentId = evt.target.dataset.commentId;
+    this._callback.commentDeleteClick(commentId);
+  }
+
+  _commentAddHandler(evt) {
+    if ((evt.ctrlKey || evt.metaKey) && ((evt.keyCode === 10 || evt.keyCode === 13))) {
+      const text = this.getElement().querySelector(`.film-details__inner [name=comment]`).value;
+      const emotions = this.getElement().querySelector(`.film-details__inner [name=comment-emoji]:checked`).value;
+      const date = new Date();
+
+      evt.preventDefault();
+      this._callback.commentAddHandler({
+        text,
+        emotions,
+        date
+      });
+    }
+  }
+
   setClosePopupFilmDetailHandler(callback) {
     this._callback.closeFilmDetail = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closePopupFilmDetailHandler);
@@ -236,6 +258,22 @@ export default class FilmDetailsView extends SmartComponent {
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._inWatchlistClickHandler);
   }
 
+  setCommentDeleteHandler(callback) {
+    this._callback.commentDeleteClick = callback;
+
+    const commentDeleteBtnElements = this.getElement()
+      .querySelectorAll(`.film-details__comment-delete`);
+
+    commentDeleteBtnElements.forEach((element) => {
+      element.addEventListener(`click`, this._commentDeleteHandler);
+    });
+  }
+
+  setCommentAddHandler(callback) {
+    this._callback.commentAddHandler = callback;
+    this.getElement().addEventListener(`keydown`, this._commentAddHandler);
+  }
+
   static parseFilmToData(film) {
     return Object.assign(
         {},
@@ -249,6 +287,7 @@ export default class FilmDetailsView extends SmartComponent {
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setAlreadyWatchClickHandler(this._callback.alreadyWatchClick);
     this.setInWatchlistClickHandler(this._callback.inWatchlistClick);
+    this.setCommentDeleteHandler(this._callback.commentDeleteClick);
   }
 
   getTemplate() {

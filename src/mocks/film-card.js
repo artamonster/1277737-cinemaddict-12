@@ -94,4 +94,4 @@ const generateFilmCards = (count) => {
   return result;
 };
 
-export {generateFilmCard, generateFilmCards, generateDescription};
+export {generateId, generateFilmCard, generateFilmCards, generateDescription};
