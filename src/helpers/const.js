@@ -19,3 +19,20 @@ export const EMOJI_WIDTH = 55;
 export const EMOJI_HEIGHT = 55;
 export const FILM_DETAIL_DATE_FORMAT = `DD MMMM YYYY`;
 export const FILM_CARD_DATE_FORMAT = `YYYY`;
+
+export const UserAction = {
+  UPDATE_FILM: `UPDATE_FILM`,
+  DELETE_COMMENT: `DELETE_COMMENT`,
+  ADD_COMMENT: `ADD_COMMENT`,
+};
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`,
+};
+export const FilterType = {
+  ALL: `all`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`
+};

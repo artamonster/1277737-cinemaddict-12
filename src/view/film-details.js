@@ -7,6 +7,7 @@ import {
   humanizeCommentDate,
 } from '../helpers/common';
 import {EMOJI_WIDTH, EMOJI_HEIGHT} from "../helpers/const";
+import he from "he";
 
 const createGenresMarkup = (genres) => genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -25,27 +26,6 @@ const createControlItemMarkup = (name, labelText, isActive) => {
   >${labelText}</label>`;
 };
 
-const createRatingScoreMarkup = (userRating) => {
-  const from = 1;
-  const to = 9;
-  const result = [];
-  for (let i = from; i <= to; i++) {
-    result.push(`<input
-      type="radio"
-      name="score"
-      class="film-details__user-rating-input visually-hidden"
-      value="${i}"
-      id="rating-${i}"
-      ${userRating === i ? `checked` : ``}
-    >
-    <label
-      class="film-details__user-rating-label"
-      for="rating-${i}"
-    >${i}</label>`);
-  }
-  return result.join(`\n`);
-};
-
 const createCommentsListMarkup = (comments) => comments
   .map((comment) => {
     const {text, emotions, author, date} = comment;
@@ -54,21 +34,20 @@ const createCommentsListMarkup = (comments) => comments
       <img src="./images/emoji/${emotions}.png" width="55" height="55" alt="emoji">
     </span>
     <div>
-      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-comment-id="${comment.id}">Delete</button>
       </p>
     </div>
   </li>`;
   })
   .join(`\n`);
 
-
 const createGenresTitleText = (genres) => genres.length > 1 ? `Genres` : `Genre`;
 
-const createFilmDetails = (film, options = {}) => {
+const createFilmDetails = (film) => {
   const {
     title,
     rating,
@@ -77,14 +56,10 @@ const createFilmDetails = (film, options = {}) => {
     genres,
     description,
     comments,
-  } = film;
-
-  const {
-    userRating,
     isInWatchlist,
     isWatched,
     isFavorite,
-  } = options;
+  } = film;
 
   const filmDate = formatFilmDetailReleaseDate(date);
   const fileName = getFileName(title);
@@ -111,7 +86,6 @@ const createFilmDetails = (film, options = {}) => {
               </div>
               <div class="film-details__rating">
                 <p class="film-details__total-rating">${createRatingText(rating)}</p>
-                ${userRating ? `<p class="film-details__user-rating">Your rate ${userRating}</p>` : ``}
               </div>
             </div>
             <table class="film-details__table">
@@ -153,25 +127,7 @@ const createFilmDetails = (film, options = {}) => {
           ${favoriteItem}
         </section>
       </div>
-      ${isWatched ? `<div class="form-details__middle-container">
-        <section class="film-details__user-rating-wrap">
-          <div class="film-details__user-rating-controls">
-            <button class="film-details__watched-reset" type="button">Undo</button>
-          </div>
-          <div class="film-details__user-score">
-            <div class="film-details__user-rating-poster">
-              <img src="./images/posters/${fileName}.jpg" alt="film-poster" class="film-details__user-rating-img">
-            </div>
-            <section class="film-details__user-rating-inner">
-              <h3 class="film-details__user-rating-title">${title}</h3>
-              <p class="film-details__user-rating-feelings">How you feel it?</p>
-              <div class="film-details__user-rating-score">
-                ${createRatingScoreMarkup(userRating)}
-              </div>
-            </section>
-          </div>
-        </section>
-      </div>` : ``}
+
       <div class="form-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
@@ -220,7 +176,8 @@ export default class FilmDetailsView extends SmartComponent {
     this._alreadyWatchClickHandler = this._alreadyWatchClickHandler.bind(this);
     this._inWatchlistClickHandler = this._inWatchlistClickHandler.bind(this);
     this._emotionClickHandler = this._emotionClickHandler.bind(this);
-
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._commentAddHandler = this._commentAddHandler.bind(this);
     this._setInnerHandlers();
   }
   _setInnerHandlers() {
@@ -261,9 +218,29 @@ export default class FilmDetailsView extends SmartComponent {
     this._callback.closeFilmDetail();
   }
 
+  _commentDeleteHandler(evt) {
+    evt.preventDefault();
+    const commentId = evt.target.dataset.commentId;
+    this._callback.commentDeleteClick(commentId);
+  }
+
+  _commentAddHandler(evt) {
+    if ((evt.ctrlKey || evt.metaKey) && ((evt.keyCode === 10 || evt.keyCode === 13))) {
+      const text = this.getElement().querySelector(`.film-details__inner [name=comment]`).value;
+      const emotions = this.getElement().querySelector(`.film-details__inner [name=comment-emoji]:checked`).value;
+      const date = new Date();
+
+      evt.preventDefault();
+      this._callback.commentAddHandler({
+        text,
+        emotions,
+        date
+      });
+    }
+  }
+
   setClosePopupFilmDetailHandler(callback) {
     this._callback.closeFilmDetail = callback;
-
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closePopupFilmDetailHandler);
   }
 
@@ -282,6 +259,22 @@ export default class FilmDetailsView extends SmartComponent {
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._inWatchlistClickHandler);
   }
 
+  setCommentDeleteHandler(callback) {
+    this._callback.commentDeleteClick = callback;
+
+    const commentDeleteBtnElements = this.getElement()
+      .querySelectorAll(`.film-details__comment-delete`);
+
+    commentDeleteBtnElements.forEach((element) => {
+      element.addEventListener(`click`, this._commentDeleteHandler);
+    });
+  }
+
+  setCommentAddHandler(callback) {
+    this._callback.commentAddHandler = callback;
+    this.getElement().addEventListener(`keydown`, this._commentAddHandler);
+  }
+
   static parseFilmToData(film) {
     return Object.assign(
         {},
@@ -295,6 +288,7 @@ export default class FilmDetailsView extends SmartComponent {
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setAlreadyWatchClickHandler(this._callback.alreadyWatchClick);
     this.setInWatchlistClickHandler(this._callback.inWatchlistClick);
+    this.setCommentDeleteHandler(this._callback.commentDeleteClick);
   }
 
   getTemplate() {
