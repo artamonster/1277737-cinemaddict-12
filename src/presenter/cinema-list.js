@@ -138,7 +138,7 @@ class CinemaListPresenter {
   _renderSort(container = this._filmsContainer) {
     this._sortComponent = new SortListView(this._currentSortType);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-    render(container, this._sortComponent, RenderPosition.AFTERBEGIN);
+    render(container, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNoFilms() {
@@ -215,6 +215,8 @@ class CinemaListPresenter {
     this._filmPresenter = {};
 
     remove(this._sortComponent);
+    remove(this._filmListContainerComponent);
+    remove(this._filmsListComponent);
     remove(this._noFilmComponent);
     remove(this._showMoreFilmsBtn);
     remove(this._filmsListTopRatedComponent);

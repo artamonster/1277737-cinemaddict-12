@@ -20,7 +20,8 @@ const filmsWatchList = films.filter(({isInWatchlist}) => isInWatchlist);
 
 const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
-
+const footerElement = document.querySelector(`.footer`);
+const footerStatisticElement = footerElement.querySelector(`.footer__statistics`);
 
 render(headerElement, new UserRankView(filmsWatchList.length), RenderPosition.BEFOREEND);
 
@@ -30,4 +31,4 @@ const filterPresenter = new FilterPresenter(mainElement, filterModel, filmsModel
 cinemaListPresenter.init();
 filterPresenter.init();
 
-render(mainElement, new MoviesAmountView(), RenderPosition.BEFOREEND);
+render(footerStatisticElement, new MoviesAmountView(), RenderPosition.BEFOREEND);
