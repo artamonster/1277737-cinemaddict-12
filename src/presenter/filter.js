@@ -1,19 +1,21 @@
 import FilterView from "../view/filter.js";
 import {render, replaceElement, remove, RenderPosition} from "../helpers/render.js";
 import {filter} from "../helpers/filter.js";
-import {FilterType, UpdateType} from "../helpers/const.js";
+import {FilterType, UpdateType, PageMode, UserAction} from "../helpers/const.js";
 
 export default class Filter {
-  constructor(filterContainer, filterModel, filmsModel) {
+  constructor(filterContainer, filterModel, filmsModel, pageModeModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
+    this._pageModeModel = pageModeModel;
     this._currentFilter = null;
 
     this._filterComponent = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
+    this._handleChangeMode = this._handleChangeMode.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -27,6 +29,7 @@ export default class Filter {
 
     this._filterComponent = new FilterView(filters, this._currentFilter);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterComponent.setChangePageModeHandler(this._handleChangeMode);
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
@@ -41,7 +44,17 @@ export default class Filter {
     this.init();
   }
 
+  _handleChangeMode(mode) {
+    this._pageModeModel.setMode(UserAction.CHANGE_MODE, mode);
+  }
+
   _handleFilterTypeChange(filterType) {
+    if (this._pageModeModel.getMode() !== PageMode.FILM_VIEW) {
+      this._pageModeModel.setMode(UserAction.CHANGE_MODE, PageMode.FILM_VIEW);
+      this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+      return;
+    }
+
     if (this._currentFilter === filterType) {
       return;
     }

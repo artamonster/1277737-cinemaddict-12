@@ -24,6 +24,7 @@ export const UserAction = {
   UPDATE_FILM: `UPDATE_FILM`,
   DELETE_COMMENT: `DELETE_COMMENT`,
   ADD_COMMENT: `ADD_COMMENT`,
+  CHANGE_MODE: `CHANGE_MODE`
 };
 export const UpdateType = {
   PATCH: `PATCH`,
@@ -36,3 +37,16 @@ export const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`
 };
+export const PageMode = {
+  FILM_VIEW: `FILM_VIEW`,
+  STATISTICS: `STATISTICS`
+};
+export const StatisticPeriods = {
+  ALL: `all-time`,
+  TODAY: `today`,
+  WEEK: `week`,
+  MONTH: `month`,
+  YEAR: `year`
+};
+
+export const BAR_HEIGHT = 50;
