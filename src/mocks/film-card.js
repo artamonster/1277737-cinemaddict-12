@@ -81,6 +81,7 @@ const generateFilmCard = () => {
     isWatched: getRandomBooleanValue(),
     isFavorite: getRandomBooleanValue(),
     comments: generateComments(),
+    watchingDate: generateDate()
   };
 };
 

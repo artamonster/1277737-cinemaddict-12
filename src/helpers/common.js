@@ -71,3 +71,4 @@ export const generateDate = (start = -MAX_DAY_GAP, to = MAX_DAY_GAP) => {
   return currentDate;
 };
 
+export const getCurrentDate = () => new Date();

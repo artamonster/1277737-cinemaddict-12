@@ -1,4 +1,5 @@
 import AbstractComponent from './abstract-component.js';
+import {PageMode} from "../helpers/const.js";
 
 export default class FilterView extends AbstractComponent {
   constructor(filters, currentFilterType) {
@@ -8,6 +9,7 @@ export default class FilterView extends AbstractComponent {
     this._filters = filters;
 
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+    this._changePageModeHandler = this._changePageModeHandler.bind(this);
   }
 
   _filterTypeChangeHandler(evt) {
@@ -16,9 +18,19 @@ export default class FilterView extends AbstractComponent {
     this._callback.filterTypeChange(link[1]);
   }
 
+  _changePageModeHandler(evt) {
+    evt.preventDefault();
+    this._callback.pageModeChange(PageMode.STATISTICS);
+  }
+
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
+    this.getElement().querySelector(`.main-navigation__items`).addEventListener(`click`, this._filterTypeChangeHandler);
+  }
+
+  setChangePageModeHandler(callback) {
+    this._callback.pageModeChange = callback;
+    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._changePageModeHandler);
   }
 
   _createFilterItemTemplate(filter, currentFilterType) {
