@@ -1,6 +1,6 @@
-import Observer from "../helpers/observer";
+import Observer from "../utils/observer";
 
-export default class Comments extends Observer {
+export default class CommentModel extends Observer {
   constructor() {
     super();
     this._comments = [];
@@ -52,5 +52,19 @@ export default class Comments extends Observer {
     ];
 
     this._broadcast(updateType);
+  }
+
+  static adaptToClient(comment) {
+    const adaptedComment = Object.assign(
+        {},
+        comment,
+        {
+          text: comment.comment,
+        }
+    );
+
+    delete adaptedComment.comment;
+
+    return adaptedComment;
   }
 }

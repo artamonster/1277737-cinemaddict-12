@@ -1,43 +1,50 @@
-import UserRankView from "./view/user-rank.js";
-import MoviesAmountView from "./view/movies-amount.js";
+import {
+  RenderPosition,
+  END_POINT,
+  AUTHORIZATION, UpdateType
+} from "./const";
+import {renderElement} from "./utils/render";
+import {getRandomInteger} from "./utils/common";
+
+import StatisticView from "./view/statistic";
 
 import AppPageModePresenter from "./presenter/page-mode";
-import CinemaListPresenter from "./presenter/cinema-list.js";
+import MovieListPresenter from "./presenter/movie-list";
 import FilterPresenter from "./presenter/filter";
 import StatisticsPresenter from "./presenter/statistics";
-import FilmsModel from "./model/films";
+import FilmModel from "./model/film";
 import FilterModel from "./model/filter";
-import AppPageModeModel from "./model/page-mode";
-import {countWatchedFilms} from "./helpers/statistics";
+import PageModeModel from "./model/page-mode";
+import Api from "./api";
 
-import {generateFilmCards} from "./mocks/film-card.js";
-import {RenderPosition, render} from './helpers/render';
-import {FILM_COUNT} from "./helpers/const";
-
-const films = generateFilmCards(FILM_COUNT);
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
-
+const api = new Api(END_POINT, AUTHORIZATION);
+const filmModel = new FilmModel();
 const filterModel = new FilterModel();
 
-const watchedFilmsCount = countWatchedFilms(filmsModel.getFilms());
+const filmsCountInBase = getRandomInteger(10000, 1000000);
 
-const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
+const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 const footerStatisticElement = footerElement.querySelector(`.footer__statistics`);
 
-render(headerElement, new UserRankView(watchedFilmsCount), RenderPosition.BEFOREEND);
+const pageModeModel = new PageModeModel();
 
-const pageModeModel = new AppPageModeModel();
-
-const cinemaListPresenter = new CinemaListPresenter(mainElement, filmsModel, filterModel, pageModeModel);
-const statisticsPresenter = new StatisticsPresenter(mainElement, filmsModel);
-const filterPresenter = new FilterPresenter(mainElement, filterModel, filmsModel, pageModeModel);
-cinemaListPresenter.init();
+const movieListPresenter = new MovieListPresenter(mainElement, headerElement, filmModel, filterModel, api);
+const statisticsPresenter = new StatisticsPresenter(mainElement, filmModel);
+const filterPresenter = new FilterPresenter(mainElement, filterModel, filmModel, pageModeModel);
 filterPresenter.init();
+movieListPresenter.init(true);
 
-const appPageModePresenter = new AppPageModePresenter(mainElement, pageModeModel, cinemaListPresenter, statisticsPresenter);
+const appPageModePresenter = new AppPageModePresenter(mainElement, pageModeModel, movieListPresenter, statisticsPresenter);
 appPageModePresenter.init();
 
-render(footerStatisticElement, new MoviesAmountView(), RenderPosition.BEFOREEND);
+renderElement(footerStatisticElement, new StatisticView(filmsCountInBase), RenderPosition.BEFOREEND);
+
+api.getFilms()
+  .then((films) => {
+    filmModel.setFilms(UpdateType.INIT, films);
+  })
+  .catch(() => {
+    filmModel.setFilms(UpdateType.INIT, []);
+  });

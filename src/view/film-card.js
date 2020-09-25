@@ -1,75 +1,20 @@
-import AbstractComponent from './abstract-component.js';
-import {formatFilmDuration, getFileName, formatFilmReleaseDate, createRatingText} from '../helpers/common';
+import AbstractView from "./abstract";
+import {MAX_FILM_DESCRIPTION_LENGTH, FILM_DESCRIPTION_AFTER_SIGN} from "../const";
+import {formatFilmReleaseDate, formatFilmDuration} from "../utils/film";
 
-const createControlItemMarkup = (name, buttonText, isActive) =>
-  `<button
-    class="film-card__controls-item button
-    film-card__controls-item--${name}
-    ${isActive ? `film-card__controls-item--active` : ``}
-  ">${buttonText}</button>`;
 
-const createCommentsTitleText = (comments) => {
-  switch (comments.length) {
-    case 0:
-      return `no comments yet`;
-    case 1:
-      return `1 comment`;
-    default:
-      return `${comments.length} comments`;
-  }
-};
-
-const createFilmCard = (film) => {
-  const {
-    title,
-    rating,
-    date,
-    duration,
-    genres,
-    description,
-    commentsCount,
-    isInWatchlist,
-    isWatched,
-    isFavorite,
-    comments,
-  } = film;
-
-  const filmDate = formatFilmReleaseDate(date);
-  const [mainGenre] = genres;
-  const watchlistButton = createControlItemMarkup(`add-to-watchlist`, `Add to watchlist`, isInWatchlist);
-  const watchedButton = createControlItemMarkup(`mark-as-watched`, `Mark as watched`, isWatched);
-  const favoriteButton = createControlItemMarkup(`favorite`, `Mark as favorite`, isFavorite);
-  return `<article class="film-card">
-    <h3 class="film-card__title">${title}</h3>
-    <p class="film-card__rating">${createRatingText(rating)}</p>
-    <p class="film-card__info">
-      <span class="film-card__year">${filmDate}</span>
-      <span class="film-card__duration">${formatFilmDuration(duration)}</span>
-      <span class="film-card__genre">${mainGenre}</span>
-    </p>
-    <img src="./images/posters/${getFileName(title)}.jpg" alt="${title}" class="film-card__poster">
-    <p class="film-card__description">${description}</p>
-    <a class="film-card__comments">${commentsCount} comments</a>
-    <a class="film-card__comments">${createCommentsTitleText(comments)}</a>
-    <form class="film-card__controls">
-      ${watchlistButton}
-      ${watchedButton}
-      ${favoriteButton}
-    </form>
-  </article>`;
-};
-
-export default class FilmCardView extends AbstractComponent {
+export default class FilmCard extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
-    this._data = FilmCardView.parseFilmToData(film);
+    this._data = FilmCard.parseFilmToData(film);
 
     this._openPopupFilmDetailHandler = this._openPopupFilmDetailHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._alreadyWatchClickHandler = this._alreadyWatchClickHandler.bind(this);
     this._inWatchlistClickHandler = this._inWatchlistClickHandler.bind(this);
   }
+
   _favoriteClickHandler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
@@ -91,6 +36,7 @@ export default class FilmCardView extends AbstractComponent {
 
   setOpenPopupFilmDetailHandler(callback) {
     this._callback.openFilmDetail = callback;
+
     this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, this._openPopupFilmDetailHandler);
     this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, this._openPopupFilmDetailHandler);
     this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, this._openPopupFilmDetailHandler);
@@ -125,7 +71,33 @@ export default class FilmCardView extends AbstractComponent {
   }
 
   getTemplate() {
-    return createFilmCard(this._data);
-  }
+    const {name, poster, date, genres, shortDescription, comments, duration, rating, inWatchlist, isAlreadyWatched, isFavorite} = this._data;
+    const filmGenres = genres.join(`, `);
 
+    const filmDate = formatFilmReleaseDate(date);
+
+    const description = shortDescription.length > MAX_FILM_DESCRIPTION_LENGTH
+      ? shortDescription.substring(0, MAX_FILM_DESCRIPTION_LENGTH - 2) + FILM_DESCRIPTION_AFTER_SIGN
+      : shortDescription;
+
+    return (
+      `<article class="film-card">
+        <h3 class="film-card__title">${name}</h3>
+        <p class="film-card__rating">${rating}</p>
+        <p class="film-card__info">
+          <span class="film-card__year">${filmDate}</span>
+          <span class="film-card__duration">${formatFilmDuration(duration)}</span>
+          <span class="film-card__genre">${filmGenres}</span>
+        </p>
+        <img src="${poster}" alt="Film ${name}" class="film-card__poster">
+        <p class="film-card__description">${description}</p>
+        <a class="film-card__comments">${comments.length} comments</a>
+        <form class="film-card__controls">
+          <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${inWatchlist ? `film-card__controls-item--active` : ``}">Add to watchlist</button>
+          <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isAlreadyWatched ? `film-card__controls-item--active` : ``}">Mark as watched</button>
+          <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite ? `film-card__controls-item--active` : ``}">Mark as favorite</button>
+        </form>
+      </article>`
+    );
+  }
 }

@@ -1,10 +1,12 @@
-import {PageMode, UserAction} from "../helpers/const.js";
+import {PageMode, UserAction} from "../const";
 
 export default class AppPageModePresenter {
   constructor(boardContainer, pageModeModel, movieListPresenter, statisticsPresenter) {
     this._movieListPresenter = movieListPresenter;
     this._statisticsPresenter = statisticsPresenter;
     this._pageModeModel = pageModeModel;
+
+    this._statisticsPageComponent = null;
 
     this._handleModeEvent = this._handleModeEvent.bind(this);
   }

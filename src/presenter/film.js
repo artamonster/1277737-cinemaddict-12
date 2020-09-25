@@ -1,16 +1,20 @@
-import FilmCardView from "../view/film-card.js";
-import FilmDetailsView from "../view/film-details.js";
-import CommentsModel from "../model/comments";
-import {RenderPosition, render, remove, replaceElement} from '../helpers/render';
-import {Mode, UserAction, UpdateType} from "../helpers/const";
+import FilmCardView from "../view/film-card";
+import FilmDetailView from "../view/film-details";
+import FilmDetailLoadingView from "../view/film-details-loading";
+import CommentModel from "../model/comment";
+import {renderElement, replaceElement, removeElement} from "../utils/render";
+import {RenderPosition, Mode, UserAction, UpdateType} from "../const";
 import {generateComment} from "../mocks/comment";
+import {getCurrentDate} from "../utils/common";
 
 export default class FilmPresenter {
-  constructor(filmListContainer, changeData, changeMode) {
+  constructor(filmListContainer, changeData, changeMode, api) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
-    this._commentsModel = new CommentsModel();
+    this._commentsModel = new CommentModel();
+    this._api = api;
+    this._loadingComponent = new FilmDetailLoadingView();
 
     this._filmComponent = null;
     this._filmDetailComponent = null;
@@ -30,13 +34,10 @@ export default class FilmPresenter {
 
   init(film) {
     this._film = film;
-    this._commentsModel.setComments(film.comments);
 
     const prevFilmCardComponent = this._filmComponent;
-    const prevFilmDetailComponent = this._filmDetailComponent;
 
     this._filmComponent = new FilmCardView(film);
-    this._filmDetailComponent = new FilmDetailsView(film);
 
     this._filmComponent.setOpenPopupFilmDetailHandler(this._openFilmDetailHandler);
 
@@ -44,26 +45,16 @@ export default class FilmPresenter {
     this._filmComponent.setAlreadyWatchClickHandler(this._alreadyWatchClickHandler);
     this._filmComponent.setInWatchlistClickHandler(this._inWatchlistClickHandler);
 
-    this._filmDetailComponent.setFavoriteClickHandler(this._favoriteClickHandler);
-    this._filmDetailComponent.setAlreadyWatchClickHandler(this._alreadyWatchClickHandler);
-    this._filmDetailComponent.setInWatchlistClickHandler(this._inWatchlistClickHandler);
-
-    if (prevFilmCardComponent === null || prevFilmDetailComponent === null) {
-      render(this._filmListContainer, this._filmComponent, RenderPosition.BEFOREEND);
+    if (prevFilmCardComponent === null) {
+      renderElement(this._filmListContainer, this._filmComponent, RenderPosition.BEFOREEND);
       return;
     }
 
-    replaceElement(this._filmComponent, prevFilmCardComponent);
-
-    if (this._mode === Mode.OPENED) {
-      replaceElement(this._filmDetailComponent, prevFilmDetailComponent);
-      this._filmDetailComponent.setCommentDeleteHandler(this._commentDeleteClickHandler);
-      this._filmDetailComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
-      this._filmDetailComponent.setClosePopupFilmDetailHandler(this._closeFilmDetailHandler);
+    if (this._filmListContainer.getElement().contains(prevFilmCardComponent.getElement())) {
+      replaceElement(this._filmComponent, prevFilmCardComponent);
     }
 
-    remove(prevFilmCardComponent);
-    remove(prevFilmDetailComponent);
+    removeElement(prevFilmCardComponent);
   }
 
   resetView() {
@@ -73,12 +64,12 @@ export default class FilmPresenter {
   }
 
   destroy() {
-    remove(this._filmComponent);
-    remove(this._filmDetailComponent);
+    removeElement(this._filmComponent);
+    removeElement(this._filmDetailComponent);
   }
 
   _closeFilmDetailHandler() {
-    remove(this._filmDetailComponent);
+    removeElement(this._filmDetailComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.CLOSED;
   }
@@ -101,7 +92,8 @@ export default class FilmPresenter {
   _commentCtrlEnterAddHandler(update) {
     const comment = generateComment();
 
-    this._commentsModel.addComment(UserAction.ADD_COMMENT,
+    this._commentsModel.addComment(
+        UserAction.ADD_COMMENT,
         Object.assign(
             {},
             comment,
@@ -144,7 +136,7 @@ export default class FilmPresenter {
             {},
             this._film,
             {
-              isInWatchlist: !this._film.isInWatchlist
+              inWatchlist: !this._film.inWatchlist
             }
         )
     );
@@ -158,7 +150,8 @@ export default class FilmPresenter {
             {},
             this._film,
             {
-              isWatched: !this._film.isWatched
+              isAlreadyWatched: !this._film.isAlreadyWatched,
+              watchingDate: !this._film.isAlreadyWatched ? getCurrentDate() : null
             }
         )
     );
@@ -172,16 +165,31 @@ export default class FilmPresenter {
   }
 
   _openFilmDetailHandler() {
-    render(this._filmListContainer, this._filmDetailComponent, RenderPosition.BEFOREEND);
+    renderElement(this._filmListContainer, this._loadingComponent, RenderPosition.AFTERBEGIN);
 
-    this._filmDetailComponent.setCommentDeleteHandler(this._commentDeleteClickHandler);
-    this._filmDetailComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
-    this._filmDetailComponent.setClosePopupFilmDetailHandler(this._closeFilmDetailHandler);
-    this._filmDetailComponent.restoreHandlers();
+    this._api.getComments(this._film).then((response) => {
+      removeElement(this._loadingComponent);
 
-    document.addEventListener(`keydown`, this._escKeyDownHandler);
-    this._changeMode();
-    this._mode = Mode.OPENED;
+      this._commentsModel.setComments(response);
+      this._film.comments = this._commentsModel.getComments();
+
+      this._filmDetailComponent = new FilmDetailView(this._film);
+
+      this._filmDetailComponent.setFavoriteClickHandler(this._favoriteClickHandler);
+      this._filmDetailComponent.setAlreadyWatchClickHandler(this._alreadyWatchClickHandler);
+      this._filmDetailComponent.setInWatchlistClickHandler(this._inWatchlistClickHandler);
+
+      renderElement(this._filmListContainer, this._filmDetailComponent, RenderPosition.BEFOREEND);
+
+      this._filmDetailComponent.setCommentDeleteHandler(this._commentDeleteClickHandler);
+      this._filmDetailComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
+      this._filmDetailComponent.setClosePopupFilmDetailHandler(this._closeFilmDetailHandler);
+      this._filmDetailComponent.restoreHandlers();
+
+      document.addEventListener(`keydown`, this._escKeyDownHandler);
+      this._changeMode();
+      this._mode = Mode.OPENED;
+    });
   }
 
 }
