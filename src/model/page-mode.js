@@ -1,5 +1,5 @@
-import Observer from "../helpers/observer.js";
-import {PageMode} from "../helpers/const.js";
+import Observer from "../utils/observer.js";
+import {PageMode} from "../const.js";
 
 export default class AppPageMode extends Observer {
   constructor() {

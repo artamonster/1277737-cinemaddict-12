@@ -1,7 +1,7 @@
-import AbstractComponent from './abstract-component.js';
-import {getUserRank} from "../helpers/statistics";
+import AbstractView from "./abstract";
+import {getUserRank} from "../utils/statistics";
 
-export default class UserProfileBlock extends AbstractComponent {
+export default class UserProfileBlock extends AbstractView {
   constructor(filmsCount) {
     super();
     this._filmsCount = filmsCount;

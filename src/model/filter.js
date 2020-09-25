@@ -1,5 +1,6 @@
-import Observer from "../helpers/observer.js";
-import {FilterType} from "../helpers/const.js";
+
+import Observer from "../utils/observer.js";
+import {FilterType} from "../const.js";
 
 export default class Filter extends Observer {
   constructor() {

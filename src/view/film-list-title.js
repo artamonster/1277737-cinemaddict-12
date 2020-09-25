@@ -1,7 +1,9 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractView from "./abstract";
 
-export default class FilmsListTitleView extends AbstractComponent {
+export default class FilmListTitle extends AbstractView {
   getTemplate() {
-    return `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>`;
+    return (
+      `<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>`
+    );
   }
 }
