@@ -57,7 +57,7 @@ export const StatisticPeriods = {
 
 export const BAR_HEIGHT = 50;
 
-export const AUTHORIZATION = `Basic eUOHTevFz5tOpMESCq2j`;
+export const AUTHORIZATION = `Basic lOkrtev0OPRTYZZMESCq2j`;
 export const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict/`;
 
 export const Method = {
