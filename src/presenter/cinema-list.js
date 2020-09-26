@@ -2,12 +2,12 @@ import FilmPresenter from "../presenter/film";
 import FilmsBlockView from "../view/films-block";
 import FilmsListView from "../view/film-list";
 import FilmsView from "../view/films";
-import FilmsListNoDataView from "../view/film-list-no-data";
+import FilmsListNoMoviesView from "../view/film-list-no-movies";
 import FilmsListTitleView from "../view/film-list-title";
 import SortView from "../view/sort";
-import ShowMoreView from "../view/show-more";
-import TopRatedBlockView from "../view/top-rated";
-import MostCommentedBlockView from "../view/most-commented";
+import ShowMoreView from "../view/show-more-button";
+import TopRatedFilmsView from "../view/top-rated";
+import MostCommentedFilmsView from "../view/most-commented";
 import LoadingView from "../view/loading";
 import {filter} from "../utils/filter";
 import {renderElement, removeElement, replaceElement} from "../utils/render";
@@ -24,7 +24,7 @@ import {
 import {countWatchedFilms} from "../utils/statistics";
 import UserProfileBlockView from "../view/user-profile";
 
-export default class MovieListPresenter {
+export default class CinemaListPresenter {
   constructor(boardContainer, headerElement, filmModel, filterModel, api) {
     this._filmModel = filmModel;
     this._filterModel = filterModel;
@@ -44,9 +44,9 @@ export default class MovieListPresenter {
     this._filmsBlockComponent = new FilmsBlockView();
     this._filmsListComponent = new FilmsListView();
     this._filmsComponent = new FilmsView();
-    this._noFilmComponent = new FilmsListNoDataView();
-    this._topRatedFilmsComponent = new TopRatedBlockView();
-    this._mostCommentedFilmsComponent = new MostCommentedBlockView();
+    this._noFilmComponent = new FilmsListNoMoviesView();
+    this._topRatedFilmsComponent = new TopRatedFilmsView();
+    this._mostCommentedFilmsComponent = new MostCommentedFilmsView();
     this._loadingComponent = new LoadingView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);

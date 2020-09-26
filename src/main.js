@@ -9,7 +9,7 @@ import {getRandomInteger} from "./utils/common";
 import StatisticView from "./view/statistic";
 
 import AppPageModePresenter from "./presenter/page-mode";
-import MovieListPresenter from "./presenter/movie-list";
+import CinemaListPresenter from "./presenter/cinema-list";
 import FilterPresenter from "./presenter/filter";
 import StatisticsPresenter from "./presenter/statistics";
 import FilmModel from "./model/film";
@@ -30,13 +30,13 @@ const footerStatisticElement = footerElement.querySelector(`.footer__statistics`
 
 const pageModeModel = new PageModeModel();
 
-const movieListPresenter = new MovieListPresenter(mainElement, headerElement, filmModel, filterModel, api);
+const cinemaListPresenter = new CinemaListPresenter(mainElement, headerElement, filmModel, filterModel, api);
 const statisticsPresenter = new StatisticsPresenter(mainElement, filmModel);
 const filterPresenter = new FilterPresenter(mainElement, filterModel, filmModel, pageModeModel);
 filterPresenter.init();
-movieListPresenter.init(true);
+cinemaListPresenter.init(true);
 
-const appPageModePresenter = new AppPageModePresenter(mainElement, pageModeModel, movieListPresenter, statisticsPresenter);
+const appPageModePresenter = new AppPageModePresenter(mainElement, pageModeModel, cinemaListPresenter, statisticsPresenter);
 appPageModePresenter.init();
 
 renderElement(footerStatisticElement, new StatisticView(filmsCountInBase), RenderPosition.BEFOREEND);
