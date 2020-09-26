@@ -98,6 +98,9 @@ export default class MovieListPresenter {
           this._filmModel.updateFilm(updateType, response);
         });
         break;
+      case UserAction.UPDATE_FILM_MODEL:
+        this._filmModel.updateFilm(updateType, update);
+        break;
       case UserAction.SET_COMMENTS:
       case UserAction.DELETE_COMMENT:
         this._filmPresenter[update.id].renderFilmComponent(update);
@@ -180,7 +183,7 @@ export default class MovieListPresenter {
   }
 
   _renderFilm(film, container = this._filmsComponent) {
-    const filmPresenter = new FilmPresenter(container, this._handleViewAction, this._handleModeChange, this._api);
+    const filmPresenter = new FilmPresenter(container, this._filmsBlockComponent, this._handleViewAction, this._handleModeChange, this._filterModel, this._api);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }

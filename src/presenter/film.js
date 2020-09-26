@@ -3,16 +3,18 @@ import FilmDetailView from "../view/film-details";
 import FilmDetailLoadingView from "../view/film-detail-loading";
 import CommentModel from "../model/comment";
 import {renderElement, replaceElement, removeElement} from "../utils/render";
-import {RenderPosition, Mode, UserAction, UpdateType} from "../const";
+import {RenderPosition, Mode, UserAction, UpdateType, FilterType} from "../const";
 import {getCurrentDate} from "../utils/common";
 import CommentListPresenter from "./comment-list";
 
 export default class FilmPresenter {
-  constructor(filmListContainer, changeData, changeMode, api) {
+  constructor(filmListContainer, filmsBlockContainer, changeData, changeMode, filterModel, api) {
     this._filmListContainer = filmListContainer;
+    this._filmsBlockContainer = filmsBlockContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._commentsModel = new CommentModel();
+    this._filterModel = filterModel;
     this._api = api;
     this._loadingComponent = new FilmDetailLoadingView();
     this._commentListPresenter = null;
@@ -20,6 +22,7 @@ export default class FilmPresenter {
     this._filmComponent = null;
     this._filmDetailComponent = null;
     this._mode = Mode.CLOSED;
+    this._needUpdateBoard = this._fillUpdatesFlag();
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._closeFilmDetailHandler = this._closeFilmDetailHandler.bind(this);
@@ -108,9 +111,22 @@ export default class FilmPresenter {
     removeElement(this._filmDetailComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.CLOSED;
+    if (Object.values(this._needUpdateBoard).includes(true)) {
+      this._changeData(
+          UserAction.UPDATE_FILM_MODEL,
+          UpdateType.MINOR,
+          Object.assign(
+              {},
+              this._film
+          )
+      );
+    }
   }
 
   _favoriteClickHandler() {
+    if (this._filterModel.getFilter() === FilterType.WATCHLIST) {
+      this._needUpdateBoard[FilterType.FAVORITES] = !this._needUpdateBoard[FilterType.FAVORITES];
+    }
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.PATCH,
@@ -125,6 +141,9 @@ export default class FilmPresenter {
   }
 
   _inWatchlistClickHandler() {
+    if (this._filterModel.getFilter() === FilterType.WATCHLIST) {
+      this._needUpdateBoard[FilterType.WATCHLIST] = !this._needUpdateBoard[FilterType.WATCHLIST];
+    }
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.PATCH,
@@ -139,6 +158,9 @@ export default class FilmPresenter {
   }
 
   _alreadyWatchClickHandler() {
+    if (this._filterModel.getFilter() === FilterType.HISTORY) {
+      this._needUpdateBoard[FilterType.HISTORY] = !this._needUpdateBoard[FilterType.HISTORY];
+    }
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.PATCH,
@@ -161,7 +183,7 @@ export default class FilmPresenter {
   }
 
   _openFilmDetailHandler() {
-    renderElement(this._filmListContainer, this._loadingComponent, RenderPosition.AFTERBEGIN);
+    renderElement(this._filmsBlockContainer, this._loadingComponent, RenderPosition.AFTERBEGIN);
 
     this._api.getComments(this._film).then((response) => {
       removeElement(this._loadingComponent);
@@ -171,7 +193,7 @@ export default class FilmPresenter {
 
       this._prepareFilmDetailComponent();
 
-      renderElement(this._filmListContainer, this._filmDetailComponent, RenderPosition.BEFOREEND);
+      renderElement(this._filmsBlockContainer, this._filmDetailComponent, RenderPosition.BEFOREEND);
 
       this._renderComments();
 
@@ -209,5 +231,12 @@ export default class FilmPresenter {
     }
     this._commentListPresenter = new CommentListPresenter(container, this._commentsModel, this._film, this._api);
     this._commentListPresenter.init();
+  }
+
+  _fillUpdatesFlag() {
+    return Object.values(FilterType).reduce((acc, item) => {
+      acc[item] = false;
+      return acc;
+    }, {});
   }
 }

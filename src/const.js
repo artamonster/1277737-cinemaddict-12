@@ -1,9 +1,9 @@
+
 export const FILMS_COUNT_PER_STEP = 10;
 export const TOP_RATED_COUNT = 2;
 export const MOST_COMMENTED_COUNT = 2;
 export const MAX_FILM_DESCRIPTION_LENGTH = 140;
 export const FILM_DESCRIPTION_AFTER_SIGN = `...`;
-export const MAX_DAY_GAP = 730;
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
@@ -26,7 +26,8 @@ export const UserAction = {
   DELETE_COMMENT: `DELETE_COMMENT`,
   ADD_COMMENT: `ADD_COMMENT`,
   SET_COMMENTS: `SET_COMMENTS`,
-  CHANGE_MODE: `CHANGE_MODE`
+  CHANGE_MODE: `CHANGE_MODE`,
+  UPDATE_FILM_MODEL: `UPDATE_FILM_MODEL`
 };
 export const UpdateType = {
   PATCH: `PATCH`,
@@ -59,7 +60,7 @@ export const StatisticPeriods = {
 export const BAR_HEIGHT = 50;
 
 export const AUTHORIZATION = `Basic lOkrtev0OPRTYZZMESCq2j`;
-export const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict/`;
+export const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 
 export const Method = {
   GET: `GET`,
@@ -72,12 +73,12 @@ export const SuccessHTTPStatusRange = {
   MIN: 200,
   MAX: 299
 };
+
 export const USER_RATING_TOP_COUNT = 20;
 export const USER_RATING_MIDDLE_COUNT = 10;
 export const USER_RATING_MIN_COUNT = 1;
 export const USER_RATING_MIN_NAME = `novice`;
 export const USER_RATING_MIDDLE_NAME = `fan`;
 export const USER_RATING_TOP_NAME = `movie buff`;
-
 export const SHAKE_ANIMATION_TIMEOUT = 600;
 export const FILMS_COUNT_FORMAT = `ru-RU`;
