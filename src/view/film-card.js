@@ -3,11 +3,10 @@ import {MAX_FILM_DESCRIPTION_LENGTH, FILM_DESCRIPTION_AFTER_SIGN} from "../const
 import {formatFilmReleaseDate, formatFilmDuration} from "../utils/film";
 
 
-export default class FilmCard extends AbstractView {
+export default class FilmCardView extends AbstractView {
   constructor(film) {
     super();
-    this._film = film;
-    this._data = FilmCard.parseFilmToData(film);
+    this._data = FilmCardView.parseFilmToData(film);
 
     this._openPopupFilmDetailHandler = this._openPopupFilmDetailHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
@@ -62,12 +61,6 @@ export default class FilmCard extends AbstractView {
         {},
         film
     );
-  }
-
-  static parseDataToFilm(data) {
-    data = Object.assign({}, data);
-
-    return data;
   }
 
   getTemplate() {

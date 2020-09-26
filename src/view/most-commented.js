@@ -1,6 +1,6 @@
 import AbstractView from "./abstract";
 
-export default class MostRecommendedBlock extends AbstractView {
+export default class MostCommentedBlockView extends AbstractView {
   getTemplate() {
     return (
       `<section class="films-list--extra">

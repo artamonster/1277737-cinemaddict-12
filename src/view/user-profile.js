@@ -1,7 +1,7 @@
 import AbstractView from "./abstract";
 import {getUserRank} from "../utils/statistics";
 
-export default class UserProfileBlock extends AbstractView {
+export default class UserProfileBlockView extends AbstractView {
   constructor(filmsCount) {
     super();
     this._filmsCount = filmsCount;

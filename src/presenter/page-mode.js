@@ -6,8 +6,6 @@ export default class AppPageModePresenter {
     this._statisticsPresenter = statisticsPresenter;
     this._pageModeModel = pageModeModel;
 
-    this._statisticsPageComponent = null;
-
     this._handleModeEvent = this._handleModeEvent.bind(this);
   }
 

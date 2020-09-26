@@ -25,6 +25,7 @@ export const UserAction = {
   UPDATE_FILM: `UPDATE_FILM`,
   DELETE_COMMENT: `DELETE_COMMENT`,
   ADD_COMMENT: `ADD_COMMENT`,
+  SET_COMMENTS: `SET_COMMENTS`,
   CHANGE_MODE: `CHANGE_MODE`
 };
 export const UpdateType = {
@@ -62,7 +63,9 @@ export const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict/`;
 
 export const Method = {
   GET: `GET`,
-  PUT: `PUT`
+  PUT: `PUT`,
+  POST: `POST`,
+  DELETE: `DELETE`
 };
 
 export const SuccessHTTPStatusRange = {
@@ -75,3 +78,6 @@ export const USER_RATING_MIN_COUNT = 1;
 export const USER_RATING_MIN_NAME = `novice`;
 export const USER_RATING_MIDDLE_NAME = `fan`;
 export const USER_RATING_TOP_NAME = `movie buff`;
+
+export const SHAKE_ANIMATION_TIMEOUT = 600;
+export const FILMS_COUNT_FORMAT = `ru-RU`;

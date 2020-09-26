@@ -67,7 +67,7 @@ export default class FilmModel extends Observer {
   }
 
   static adaptToServer(film) {
-    const adaptedFilm = Object.assign(
+    return Object.assign(
         {},
         {
           "id": film.id,
@@ -97,7 +97,5 @@ export default class FilmModel extends Observer {
           }
         }
     );
-
-    return adaptedFilm;
   }
 }

@@ -7,7 +7,7 @@ import FilmsListTitleView from "../view/film-list-title";
 import SortView from "../view/sort";
 import ShowMoreView from "../view/show-more";
 import TopRatedBlockView from "../view/top-rated";
-import MostRecommendedBlockView from "../view/most-commented";
+import MostCommentedBlockView from "../view/most-commented";
 import LoadingView from "../view/loading";
 import {filter} from "../utils/filter";
 import {renderElement, removeElement, replaceElement} from "../utils/render";
@@ -46,7 +46,7 @@ export default class MovieListPresenter {
     this._filmsComponent = new FilmsView();
     this._noFilmComponent = new FilmsListNoDataView();
     this._topRatedFilmsComponent = new TopRatedBlockView();
-    this._mostRecommendedFilmsComponent = new MostRecommendedBlockView();
+    this._mostCommentedFilmsComponent = new MostCommentedBlockView();
     this._loadingComponent = new LoadingView();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -94,11 +94,13 @@ export default class MovieListPresenter {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-      case UserAction.DELETE_COMMENT:
-      case UserAction.ADD_COMMENT:
         this._api.updateFilm(update).then((response) => {
           this._filmModel.updateFilm(updateType, response);
         });
+        break;
+      case UserAction.SET_COMMENTS:
+      case UserAction.DELETE_COMMENT:
+        this._filmPresenter[update.id].renderFilmComponent(update);
         break;
     }
   }
@@ -213,9 +215,9 @@ export default class MovieListPresenter {
       return;
     }
 
-    renderElement(this._filmsBlockComponent, this._mostRecommendedFilmsComponent, RenderPosition.BEFOREEND);
+    renderElement(this._filmsBlockComponent, this._mostCommentedFilmsComponent, RenderPosition.BEFOREEND);
 
-    const mostRecommendedFilmsElement = this._mostRecommendedFilmsComponent.getElement().querySelector(`.films-list__container`);
+    const mostRecommendedFilmsElement = this._mostCommentedFilmsComponent.getElement().querySelector(`.films-list__container`);
     this._boardMostCommentedFilms
       .slice()
       .forEach((film) => this._renderFilm(film, mostRecommendedFilmsElement));
@@ -252,7 +254,7 @@ export default class MovieListPresenter {
     removeElement(this._noFilmComponent);
     removeElement(this._showMoreFilmsBtn);
     removeElement(this._topRatedFilmsComponent);
-    removeElement(this._mostRecommendedFilmsComponent);
+    removeElement(this._mostCommentedFilmsComponent);
     removeElement(this._loadingComponent);
 
     if (resetRenderedTaskCount) {
@@ -315,7 +317,6 @@ export default class MovieListPresenter {
     const sortedFilms = this._filmModel.getFilms()
       .slice()
       .filter((film) => film.commentsCount > 0)
-      .sort(sortFilmsByRating)
       .sort(sortByCommentsCount);
     return sortedFilms.splice(0, MOST_COMMENTED_COUNT);
   }

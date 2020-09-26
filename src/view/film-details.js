@@ -1,9 +1,8 @@
-import SmartView from "./smart";
-import {humanizeCommentDate, formatFilmDetailReleaseDate, formatFilmDuration} from "../utils/film";
-import {EMOJI_WIDTH, EMOJI_HEIGHT} from "../const";
-import he from "he";
 
-export default class FilmDetail extends SmartView {
+import SmartView from "./smart";
+import {formatFilmDetailReleaseDate, formatFilmDuration} from "../utils/film";
+
+export default class FilmDetailView extends SmartView {
   constructor(film) {
     super();
     this._film = film;
@@ -12,30 +11,6 @@ export default class FilmDetail extends SmartView {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._alreadyWatchClickHandler = this._alreadyWatchClickHandler.bind(this);
     this._inWatchlistClickHandler = this._inWatchlistClickHandler.bind(this);
-    this._emotionClickHandler = this._emotionClickHandler.bind(this);
-    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
-    this._commentAddHandler = this._commentAddHandler.bind(this);
-
-    this._setInnerHandlers();
-  }
-
-  _setInnerHandlers() {
-    const emoji = this.getElement()
-      .querySelectorAll(`.film-details__emoji-label`);
-
-    emoji.forEach((element) => {
-      element.addEventListener(`click`, this._emotionClickHandler);
-    });
-  }
-
-  _emotionClickHandler(evt) {
-    const emojiBlockElement = evt.currentTarget.closest(`.film-details__new-comment`).querySelector(`.film-details__add-emoji-label`);
-    let img = document.createElement(`img`);
-    img.width = EMOJI_WIDTH;
-    img.heigth = EMOJI_HEIGHT;
-    img.src = evt.currentTarget.querySelector(`img`).src;
-    emojiBlockElement.innerHTML = ``;
-    emojiBlockElement.append(img);
   }
 
   _favoriteClickHandler(evt) {
@@ -55,27 +30,6 @@ export default class FilmDetail extends SmartView {
 
   _closePopupFilmDetailHandler() {
     this._callback.closeFilmDetail();
-  }
-
-  _commentDeleteHandler(evt) {
-    evt.preventDefault();
-    const commentId = evt.target.dataset.commentId;
-    this._callback.commentDeleteClick(commentId);
-  }
-
-  _commentAddHandler(evt) {
-    if ((evt.ctrlKey || evt.metaKey) && ((evt.keyCode === 10 || evt.keyCode === 13))) {
-      const text = this.getElement().querySelector(`.film-details__inner [name=comment]`).value;
-      const emotion = this.getElement().querySelector(`.film-details__inner [name=comment-emoji]:checked`).value;
-      const date = new Date();
-
-      evt.preventDefault();
-      this._callback.commentAddHandler({
-        text,
-        emotion,
-        date
-      });
-    }
   }
 
   setClosePopupFilmDetailHandler(callback) {
@@ -99,22 +53,6 @@ export default class FilmDetail extends SmartView {
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._inWatchlistClickHandler);
   }
 
-  setCommentDeleteHandler(callback) {
-    this._callback.commentDeleteClick = callback;
-
-    const commentDeleteBtnElements = this.getElement()
-      .querySelectorAll(`.film-details__comment-delete`);
-
-    commentDeleteBtnElements.forEach((element) => {
-      element.addEventListener(`click`, this._commentDeleteHandler);
-    });
-  }
-
-  setCommentAddHandler(callback) {
-    this._callback.commentAddHandler = callback;
-    this.getElement().addEventListener(`keydown`, this._commentAddHandler);
-  }
-
   _createFilmDetailGenres(genres) {
     return (`
       <tr class="film-details__row">
@@ -125,39 +63,15 @@ export default class FilmDetail extends SmartView {
   `);
   }
 
-  _createFilmDetailComments(comments) {
-    return (`
-      <ul class="film-details__comments-list">
-        ${comments.map((comment) =>
-        `<li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${he.encode(comment.text)}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${humanizeCommentDate(comment.date)}</span>
-                <button class="film-details__comment-delete" data-comment-id="${comment.id}">Delete</button>
-              </p>
-            </div>
-          </li>`
-      ).join(``)}
-      </ul>
-    `);
-  }
-
   restoreHandlers() {
-    this._setInnerHandlers();
     this.setClosePopupFilmDetailHandler(this._callback.closeFilmDetail);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setAlreadyWatchClickHandler(this._callback.alreadyWatchClick);
     this.setInWatchlistClickHandler(this._callback.inWatchlistClick);
-    this.setCommentDeleteHandler(this._callback.commentDeleteClick);
   }
 
   getTemplate() {
-    const {name, originalName, writers, producer, ageRating, fullPoster, actors, countries, date, genres, description, comments, duration, rating, inWatchlist, isAlreadyWatched, isFavorite} = this._film;
+    const {name, originalName, writers, producer, ageRating, fullPoster, actors, countries, date, genres, description, duration, rating, inWatchlist, isAlreadyWatched, isFavorite} = this._film;
 
     const writersText = writers.join(`, `);
     const actorsText = actors.join(`, `);
@@ -227,34 +141,6 @@ export default class FilmDetail extends SmartView {
             </section>
           </div>
           <div class="form-details__bottom-container">
-            <section class="film-details__comments-wrap">
-              <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-              ${this._createFilmDetailComments(comments)}
-              <div class="film-details__new-comment">
-                <div for="add-emoji" class="film-details__add-emoji-label"></div>
-                <label class="film-details__comment-label">
-                  <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-                </label>
-                <div class="film-details__emoji-list">
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                  <label class="film-details__emoji-label" for="emoji-smile">
-                    <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                  </label>
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                  <label class="film-details__emoji-label" for="emoji-sleeping">
-                    <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                  </label>
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-                  <label class="film-details__emoji-label" for="emoji-puke">
-                    <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                  </label>
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                  <label class="film-details__emoji-label" for="emoji-angry">
-                    <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                  </label>
-                </div>
-              </div>
-            </section>
           </div>
         </form>
       </section>`
