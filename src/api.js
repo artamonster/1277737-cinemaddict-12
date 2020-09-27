@@ -20,6 +20,25 @@ export default class Api {
       .then((comments) => comments.map(CommentModel.adaptToClient));
   }
 
+  addComment(comment) {
+    const filmId = comment.filmId;
+    return this._load({
+      url: `comments/${filmId}`,
+      method: Method.POST,
+      body: JSON.stringify(CommentModel.adaptToServer(comment)),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON)
+      .then((response) => response.comments.map(CommentModel.adaptToClient));
+  }
+
+  deleteComment(commentId) {
+    return this._load({
+      url: `comments/${commentId}`,
+      method: Method.DELETE
+    });
+  }
+
   updateFilm(film) {
     return this._load({
       url: `movies/${film.id}`,
