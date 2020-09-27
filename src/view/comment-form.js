@@ -33,7 +33,7 @@ export default class CommentAddFormView extends SmartView {
   }
 
   _emotionClickHandler(evt) {
-    let img = document.createElement(`img`);
+    const img = document.createElement(`img`);
     img.width = EMOJI_WIDTH;
     img.heigth = EMOJI_HEIGHT;
     img.src = evt.currentTarget.querySelector(`img`).src;
