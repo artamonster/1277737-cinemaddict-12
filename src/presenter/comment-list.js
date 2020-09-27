@@ -3,30 +3,32 @@ import {RenderPosition, UserAction} from "../const";
 import CommentListView from "../view/comment-list";
 import {generateId} from "../utils/film";
 import CommentPresenter from "./comment";
-import CommentAddFormView from "../view/comment-form";
+import CommentFormView from "../view/comment-form";
 
 export default class CommentListPresenter {
   constructor(commentContainer, commentModel, film, api) {
     this._commentContainer = commentContainer;
     this._commentModel = commentModel;
-    this._commentsLength = commentModel.getComments().length;
+    this._commentsCount = commentModel.getComments().length;
     this._api = api;
     this._film = film;
     this._commentPresenter = {};
 
-    this._commentsListComponent = new CommentListView(this._commentsLength);
-    this._commentsAddFormComponent = new CommentAddFormView();
+    this._commentsListComponent = new CommentListView(this._commentsCount);
+    this._commentsAddFormComponent = new CommentFormView();
     this._commentsList = this._commentsListComponent.getElement().querySelector(`.film-details__comments-list`);
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._commentCtrlEnterAddHandler = this._commentCtrlEnterAddHandler.bind(this);
+    this.changeOnline = this.changeOnline.bind(this);
+    this._commentsAddFormComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
   }
 
   init() {
     renderElement(this._commentContainer, this._commentsListComponent, RenderPosition.BEFOREEND);
     renderElement(this._commentsListComponent, this._commentsAddFormComponent, RenderPosition.BEFOREEND);
-    this._commentsAddFormComponent.setCommentAddHandler(this._commentCtrlEnterAddHandler);
     this._renderComments(this._commentModel.getComments());
+    this._setInnerHandlers();
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -61,7 +63,7 @@ export default class CommentListPresenter {
 
   _setSaving(comment) {
     this._commentsAddFormComponent.updateData({
-      isSaving: true,
+      isDisabled: true,
       comment
     });
   }
@@ -69,7 +71,7 @@ export default class CommentListPresenter {
   _setAborting() {
     const resetFormState = () => {
       this._commentsAddFormComponent.updateData({
-        isSaving: false,
+        isDisabled: false,
       });
     };
 
@@ -101,5 +103,26 @@ export default class CommentListPresenter {
       .values(this._commentPresenter)
       .forEach((presenter) => presenter.destroy());
     this._commentPresenter = {};
+    this._unsetInnerHandlers();
+  }
+
+  changeOnline() {
+    Object
+      .values(this._commentPresenter)
+      .forEach((presenter) => presenter.changeOnline());
+
+    this._commentsAddFormComponent.updateData({
+      isDisabled: !this._api.isOnline(),
+    });
+  }
+
+  _unsetInnerHandlers() {
+    window.removeEventListener(`online`, this.changeOnline);
+    window.removeEventListener(`offline`, this.changeOnline);
+  }
+
+  _setInnerHandlers() {
+    window.addEventListener(`online`, this.changeOnline);
+    window.addEventListener(`offline`, this.changeOnline);
   }
 }

@@ -65,9 +65,7 @@ export default class FilmPresenter {
       return;
     }
 
-    if (this._filmListContainer.getElement().contains(prevFilmCardComponent.getElement())) {
-      replaceElement(this._filmComponent, prevFilmCardComponent);
-    }
+    replaceElement(this._filmComponent, prevFilmCardComponent);
 
     removeElement(prevFilmCardComponent);
   }
@@ -86,7 +84,7 @@ export default class FilmPresenter {
                 this._film,
                 {
                   comments: comments.map((comment) => comment.id),
-                  commentsLength: comments.length,
+                  commentsCount: comments.length,
                   loadedComments: this._commentsModel.getComments()
                 }
             )
@@ -124,7 +122,7 @@ export default class FilmPresenter {
   }
 
   _favoriteClickHandler() {
-    if (this._filterModel.getFilter() === FilterType.WATCHLIST) {
+    if (this._filterModel.getFilter() === FilterType.FAVORITES) {
       this._needUpdateBoard[FilterType.FAVORITES] = !this._needUpdateBoard[FilterType.FAVORITES];
     }
     this._changeData(

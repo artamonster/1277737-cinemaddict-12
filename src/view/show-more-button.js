@@ -1,6 +1,6 @@
 import AbstractView from "./abstract";
 
-export default class ShowMoreView extends AbstractView {
+export default class ShowMoreButtonView extends AbstractView {
   constructor() {
     super();
     this._clickHandler = this._clickHandler.bind(this);

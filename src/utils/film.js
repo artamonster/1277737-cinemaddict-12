@@ -1,4 +1,5 @@
 import moment from "moment";
+import {nanoid} from "nanoid";
 import {FILM_DETAIL_RELEASE_DATE_FORMAT, FILM_PREVIEW_RELEASE_DATE_FORMAT} from "../const";
 
 const formatDateByTemplate = (date, format) => {
@@ -46,4 +47,4 @@ export const sortByCommentsCount = (firstFilm, secondFilm) => {
   return secondFilm.commentsCount - firstFilm.commentsCount;
 };
 
-export const generateId = () => Math.random().toString(36).substr(2, 9);
+export const generateId = () => nanoid();

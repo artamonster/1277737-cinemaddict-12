@@ -1,7 +1,7 @@
 import {
   RenderPosition,
   END_POINT,
-  AUTHORIZATION, UpdateType
+  AUTHORIZATION, UpdateType, STORE_NAME
 } from "./const";
 import {renderElement} from "./utils/render";
 import {getRandomInteger} from "./utils/common";
@@ -15,9 +15,13 @@ import StatisticsPresenter from "./presenter/statistics";
 import FilmModel from "./model/film";
 import FilterModel from "./model/filter";
 import PageModeModel from "./model/page-mode";
-import Api from "./api";
+import Api from "./api/index";
+import Store from "./api/store";
+import Provider from "./api/provider";
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const filmModel = new FilmModel();
 const filterModel = new FilterModel();
 
@@ -30,21 +34,41 @@ const footerStatisticElement = footerElement.querySelector(`.footer__statistics`
 
 const pageModeModel = new PageModeModel();
 
-const cinemaListPresenter = new CinemaListPresenter(mainElement, headerElement, filmModel, filterModel, api);
+const movieListPresenter = new CinemaListPresenter(mainElement, headerElement, filmModel, filterModel, apiWithProvider);
 const statisticsPresenter = new StatisticsPresenter(mainElement, filmModel);
 const filterPresenter = new FilterPresenter(mainElement, filterModel, filmModel, pageModeModel);
 filterPresenter.init();
-cinemaListPresenter.init(true);
+movieListPresenter.init(true);
 
-const appPageModePresenter = new AppPageModePresenter(mainElement, pageModeModel, cinemaListPresenter, statisticsPresenter);
+const appPageModePresenter = new AppPageModePresenter(mainElement, pageModeModel, movieListPresenter, statisticsPresenter);
 appPageModePresenter.init();
 
 renderElement(footerStatisticElement, new StatisticView(filmsCountInBase), RenderPosition.BEFOREEND);
 
-api.getFilms()
+apiWithProvider.getFilms()
   .then((films) => {
     filmModel.setFilms(UpdateType.INIT, films);
   })
   .catch(() => {
     filmModel.setFilms(UpdateType.INIT, []);
   });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      // ServiceWorker available
+    }).catch(() => {
+    // ServiceWorker is not available
+    });
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  if (apiWithProvider.isNeedUpdate()) {
+    apiWithProvider.sync();
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

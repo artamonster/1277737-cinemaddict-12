@@ -1,5 +1,5 @@
 
-export const FILMS_COUNT_PER_STEP = 10;
+export const FILMS_COUNT_PER_STEP = 5;
 export const TOP_RATED_COUNT = 2;
 export const MOST_COMMENTED_COUNT = 2;
 export const MAX_FILM_DESCRIPTION_LENGTH = 140;
@@ -33,6 +33,7 @@ export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
+  PATCH_MODEL: `PATCH_MODEL`,
   INIT: `INIT`
 };
 export const FilterType = {
@@ -82,3 +83,13 @@ export const USER_RATING_MIDDLE_NAME = `fan`;
 export const USER_RATING_TOP_NAME = `movie buff`;
 export const SHAKE_ANIMATION_TIMEOUT = 600;
 export const FILMS_COUNT_FORMAT = `ru-RU`;
+
+export const STORE_PREFIX = `1277737-cinemaddict-localstorage`;
+export const STORE_VER = `v12`;
+export const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+export const FILM_TYPE = {
+  MAIN: `MAIN`,
+  TOP_RATED: `TOP_RATED`,
+  MOST_COMMENTED: `MOST_COMMENTED`,
+};

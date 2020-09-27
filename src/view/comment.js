@@ -1,4 +1,3 @@
-
 import SmartView from "./smart";
 import he from "he";
 import {humanizeCommentDate} from "../utils/film";
@@ -24,8 +23,10 @@ export default class CommentView extends SmartView {
   }
 
   _setInnerHandlers() {
-    const commentDeleteBtnElement = this.getElement().querySelector(`.film-details__comment-delete`);
-    commentDeleteBtnElement.addEventListener(`click`, this._commentDeleteHandler);
+    if (this._data.isOnline) {
+      const commentDeleteBtnElement = this.getElement().querySelector(`.film-details__comment-delete`);
+      commentDeleteBtnElement.addEventListener(`click`, this._commentDeleteHandler);
+    }
   }
 
   restoreHandlers() {
@@ -39,12 +40,25 @@ export default class CommentView extends SmartView {
         {
           isDisabled: false,
           isDeleting: false,
+          isOnline: true
         }
     );
   }
 
+  _getDeleteButton(id, isOnline, isDisabled, isDeleting) {
+    if (!isOnline) {
+      return ``;
+    }
+
+    return (
+      `<button class="film-details__comment-delete" data-comment-id="${id}" ${isDisabled ? `disabled` : ``}>
+      ${isDeleting ? `Deleting...` : `Delete`}
+      </button>`
+    );
+  }
+
   getTemplate() {
-    const {emotion, text, author, date, id, isDisabled, isDeleting} = this._data;
+    const {emotion, text, author, date, id, isOnline, isDisabled, isDeleting} = this._data;
 
     return (
       `<li class="film-details__comment">
@@ -56,9 +70,7 @@ export default class CommentView extends SmartView {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
-                <button class="film-details__comment-delete" data-comment-id="${id}" ${isDisabled ? `disabled` : ``}>
-                ${isDeleting ? `Deleting...` : `Delete`}
-                </button>
+                ${this._getDeleteButton(id, isOnline, isDisabled, isDeleting)}
               </p>
             </div>
           </li>`
