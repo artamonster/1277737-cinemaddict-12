@@ -1,11 +1,9 @@
 import {
   RenderPosition,
   END_POINT,
-  AUTHORIZATION, UpdateType, STORE_NAME
+  AUTHORIZATION, UpdateType, STORE_NAME, filmsCountInBase
 } from "./const";
 import {renderElement} from "./utils/render";
-import {getRandomInteger} from "./utils/common";
-
 import StatisticView from "./view/statistic";
 
 import AppPageModePresenter from "./presenter/page-mode";
@@ -24,8 +22,6 @@ const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const filmModel = new FilmModel();
 const filterModel = new FilterModel();
-
-const filmsCountInBase = getRandomInteger(10000, 1000000);
 
 const mainElement = document.querySelector(`.main`);
 const headerElement = document.querySelector(`.header`);
