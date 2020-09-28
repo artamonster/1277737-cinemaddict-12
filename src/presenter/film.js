@@ -3,7 +3,13 @@ import FilmDetailView from "../view/film-details";
 import FilmDetailLoadingView from "../view/film-detail-loading";
 import CommentModel from "../model/comment";
 import {renderElement, replaceElement, removeElement} from "../utils/render";
-import {RenderPosition, Mode, UserAction, UpdateType, FilterType} from "../const";
+import {RenderPosition,
+  Mode,
+  UserAction,
+  UpdateType,
+  FilterType,
+  ESC_KEY_FULL_CODE,
+  ESC_KEY_SHORT_CODE} from "../const";
 import {getCurrentDate} from "../utils/common";
 import CommentListPresenter from "./comment-list";
 
@@ -23,6 +29,7 @@ export default class FilmPresenter {
     this._filmDetailComponent = null;
     this._mode = Mode.CLOSED;
     this._needUpdateBoard = this._fillUpdatesFlag();
+    this._needUpdateMostCommentedBlock = this._fillUpdateMostCommentedBlockFlag();
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._closeFilmDetailHandler = this._closeFilmDetailHandler.bind(this);
@@ -74,6 +81,7 @@ export default class FilmPresenter {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
       case UserAction.SET_COMMENTS:
+        this._needUpdateMostCommentedBlock = this._fillUpdateMostCommentedBlockFlag();
         const comments = this._commentsModel.getComments();
         this._renderComments();
         this._changeData(
@@ -118,6 +126,16 @@ export default class FilmPresenter {
               this._film
           )
       );
+    } else if (this._needUpdateMostCommentedBlock) {
+      this._changeData(
+          UserAction.UPDATE_MOST_COMMENTED_BLOCK,
+          UpdateType.MAJOR_COMMENT_BLOCK,
+          Object.assign(
+              {},
+              this._film
+          )
+      );
+      this._needUpdateMostCommentedBlock = false;
     }
   }
 
@@ -127,7 +145,7 @@ export default class FilmPresenter {
     }
     this._changeData(
         UserAction.UPDATE_FILM,
-        UpdateType.PATCH,
+        this._getNeededUpdateType(FilterType.FAVORITES),
         Object.assign(
             {},
             this._film,
@@ -144,7 +162,7 @@ export default class FilmPresenter {
     }
     this._changeData(
         UserAction.UPDATE_FILM,
-        UpdateType.PATCH,
+        this._getNeededUpdateType(FilterType.WATCHLIST),
         Object.assign(
             {},
             this._film,
@@ -161,7 +179,7 @@ export default class FilmPresenter {
     }
     this._changeData(
         UserAction.UPDATE_FILM,
-        UpdateType.PATCH,
+        this._getNeededUpdateType(FilterType.HISTORY),
         Object.assign(
             {},
             this._film,
@@ -174,7 +192,7 @@ export default class FilmPresenter {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
+    if (evt.key === ESC_KEY_FULL_CODE || evt.key === ESC_KEY_SHORT_CODE) {
       evt.preventDefault();
       this._closeFilmDetailHandler();
     }
@@ -236,5 +254,12 @@ export default class FilmPresenter {
       acc[item] = false;
       return acc;
     }, {});
+  }
+  _fillUpdateMostCommentedBlockFlag() {
+    return this._mode !== Mode.CLOSED;
+  }
+
+  _getNeededUpdateType(type) {
+    return (this._mode === Mode.CLOSED && type === this._filterModel.getFilter()) ? UpdateType.MINOR : UpdateType.PATCH;
   }
 }

@@ -4,7 +4,11 @@ export default class FilmDetailLoadingView extends AbstractView {
   getTemplate() {
     return (
       `<div class="films-list__details-loading">
-        <div class="films-list__details-loading-block"><div></div><div></div></div>
+                <!--This markup was generated here https://loading.io/css/ Classes was added manually-->
+        <div class="films-list__details-loading-block">
+            <div class="films-list__details-loading-item"></div>
+            <div class="films-list__details-loading-item films-list__details-loading-item--second"></div>
+        </div>
       </div>`
     );
   }

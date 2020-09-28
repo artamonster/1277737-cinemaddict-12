@@ -103,6 +103,9 @@ export default class CinemaListPresenter {
       case UserAction.UPDATE_FILM_MODEL:
         this._filmModel.updateFilm(updateType, update);
         break;
+      case UserAction.UPDATE_MOST_COMMENTED_BLOCK:
+        this._filmModel.updateFilm(updateType, update);
+        break;
       case UserAction.SET_COMMENTS:
       case UserAction.DELETE_COMMENT:
         this._filmModel.updateFilm(UpdateType.PATCH_MODEL, update);
@@ -112,12 +115,11 @@ export default class CinemaListPresenter {
 
   _handleModelEvent(updateType, data) {
     switch (updateType) {
-      case UpdateType.PATCH_MODEL:
-        this._filmPresenter[data.id].renderFilmComponent(data);
-        if (this._filmTopRatedPresenter[data.id]) {
-          this._filmTopRatedPresenter[data.id].renderFilmComponent(data);
-        }
+      case UpdateType.MAJOR_COMMENT_BLOCK:
         this._renderCommentedBlock();
+        break;
+      case UpdateType.PATCH_MODEL:
+        this._renderFilmCardComponents(data);
         break;
       case UpdateType.PATCH:
         this._initFilmCardComponents(data);
@@ -161,6 +163,16 @@ export default class CinemaListPresenter {
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.resetView());
+  }
+
+  _renderFilmCardComponents(film) {
+    this._filmPresenter[film.id].renderFilmComponent(film);
+    if (this._filmTopRatedPresenter[film.id]) {
+      this._filmTopRatedPresenter[film.id].renderFilmComponent(film);
+    }
+    if (this._filmCommentedPresenter[film.id]) {
+      this._filmCommentedPresenter[film.id].renderFilmComponent(film);
+    }
   }
 
   _handleSortTypeChange(sortType) {
