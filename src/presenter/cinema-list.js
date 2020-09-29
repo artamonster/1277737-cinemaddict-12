@@ -366,7 +366,7 @@ export default class CinemaListPresenter {
 
   _renderUserRatingBlock() {
     const watchedFilmsCount = countWatchedFilms(this._filmModel.getFilms());
-    if (this._watchedFilmsCount !== null || this._watchedFilmsCount === watchedFilmsCount) {
+    if (this._watchedFilmsCount === watchedFilmsCount) {
       return;
     }
     this._watchedFilmsCount = watchedFilmsCount;
