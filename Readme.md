@@ -1,3 +1,5 @@
+My pet project "Cinema addict" which implemented the MVP pattern.
+
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Андрей Артамонов](https://up.htmlacademy.ru/ecmascript/12/user/1277737).
